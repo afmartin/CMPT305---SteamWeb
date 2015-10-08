@@ -74,8 +74,9 @@ public interface Generator<T> {
 		    json = API.appdetails.getData(reqs);
 		    if(json.has("success") && !json.getBoolean("success"))
 			throw new APIEmptyResponse();
-		    json = API.appdetails.getData(reqs).getJSONObject("data");
-		} catch (APIEmptyResponse ex) {
+		    json = json.getJSONObject("data");
+		}catch(APIEmptyResponse ex){
+		    System.err.println("Failed to get game: " + id);
 		    continue;
 		}
 
@@ -89,7 +90,7 @@ public interface Generator<T> {
 		    JSONObject o1 = (JSONObject)o;
 		    genres.add(new Genre(Integer.parseInt(o1.getString("id")), o1.getString("description")));
 		}
-		
+
 		ret.add(new Game(id, json.getString("name"), genres.toArray(new Genre[genres.size()])));
 	    }
 	    if(ret.isEmpty()) throw (new APIEmptyResponse());

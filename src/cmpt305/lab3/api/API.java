@@ -29,14 +29,14 @@ public enum API {
 	if(strURL == null) return null;
         int tries = 0;
         //Static retry number... Sloppy.
-        while(tries < 3){
+        while(tries++ < 3){
             try {
                 URL url = new URL(strURL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                
+
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("http.agent", "Steam Analyzer " + (new Random()).nextInt(Integer.MAX_VALUE));
-                
+                conn.setRequestProperty("http.agent", Integer.toString((new Random()).nextInt(Integer.MAX_VALUE)));
+
                 StringBuilder str = new StringBuilder();
 
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
@@ -53,10 +53,13 @@ public enum API {
                     out = (JSONObject)o;
                 }
 
+		if(out.has("success")){
+		    Object success = out.get("success");
+		    if(success.equals(0) || success.equals(false)) //THEY USE BOOLEAN AND 0/1 D:
+			throw new APIEmptyResponse();
+		}
                 return out;
-            } catch (IOException ex) {
-                ++tries;
-            }
+            }catch(IOException ex){}
         }
         throw new APIEmptyResponse();
     }

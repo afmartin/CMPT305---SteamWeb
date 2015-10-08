@@ -123,12 +123,12 @@ public class User {
             JSONObject o1 = (JSONObject)o;
             process.put(Long.parseLong(o1.getString("steamid")), o1.getLong("friend_since"));
         }
-        List<User> users = null;
+        List<User> users;
         try{
             users = Generator.UserGenerator.generate(process.keySet().toArray(new Long[process.keySet().size()]));
-        }catch(APIEmptyResponse ex){}
-
-        if(users == null) return friends;
+        }catch(APIEmptyResponse ex){
+	    return friends;
+	}
 
         for(User u : users)
             friends.put(u, process.get(u.steamid));
