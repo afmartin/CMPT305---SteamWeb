@@ -3,6 +3,8 @@ package cmpt305.lab3.stucture;
 import cmpt305.lab3.api.API;
 import cmpt305.lab3.api.API.Reqs;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +28,48 @@ public class User {
         if(ALL_USERS.containsKey(steamid))
             return ALL_USERS.get(steamid);
 
-	return (User)Generator.UserGenerator.generate(steamid).get(0);
+	return getUsers(steamid).get(0);
     }
 
     public static User getUser(String vanityURL) throws APIEmptyResponse{
         if(VANITY_MAP.containsKey(vanityURL))
             return ALL_USERS.get(VANITY_MAP.get(vanityURL));
 
-	return (User)Generator.UserGenerator.generate(resolveVanity(vanityURL)).get(0);
+	return getUsers(resolveVanity(vanityURL)).get(0);
+    }
+
+    public static List<User> getUsers(Long... ids) throws APIEmptyResponse{
+	if(ids == null || ids.length == 0) return null;
+
+	Map<API.Reqs, String> reqs = new HashMap();
+	reqs.put(API.Reqs.steamids, Arrays.toString(ids).replaceAll(" |\\[|\\]", ""));
+
+	JSONArray json;
+	try {
+	    json = API.GetPlayerSummaries.getData(reqs).getJSONArray("players");
+	} catch (APIEmptyResponse ex) {
+	    json = new JSONArray();
+	}
+
+	List ret = new ArrayList();
+
+	for(Object o : json){
+	    JSONObject o1 = (JSONObject)o;
+	    long steamid = Long.parseLong(o1.getString("steamid"));
+	    if(ALL_USERS.containsKey(steamid))
+		ret.add(ALL_USERS.get(steamid));
+	    else
+		ret.add(new User(
+			steamid,
+			o1.getString("personaname"),
+			o1.getString("profileurl"),
+			o1.getString("avatar"),
+			o1.getString("avatarmedium"),
+			o1.getString("avatarfull")
+		));
+	}
+	if(ret.isEmpty()) throw (new APIEmptyResponse());
+	return ret;
     }
 
     private static long resolveVanity(String vanityURL) throws APIEmptyResponse{
@@ -83,7 +119,7 @@ public class User {
         JSONArray json;
         try {
 	    //If user only has 1 game, will it still be an array?
-            json = API.GetOwnedGames.getData(reqData).getJSONArray("games");
+	    json = API.GetOwnedGames.getData(reqData).getJSONArray("games");
         } catch (APIEmptyResponse ex) {
             return games;
         }
@@ -95,9 +131,7 @@ public class User {
             process.put(o1.getLong("appid"), o1.getLong("playtime_forever"));
         }
         List<Game> curGames = null;
-        try{
-            curGames = Generator.GameGenerator.generate(process.keySet().toArray(new Long[process.keySet().size()]));
-        }catch(APIEmptyResponse ex){}
+        curGames = Game.getGames(process.keySet().toArray(new Long[process.keySet().size()]));
 
         if(curGames == null) return games;
 
@@ -126,7 +160,7 @@ public class User {
         }
         List<User> users;
         try{
-            users = Generator.UserGenerator.generate(process.keySet().toArray(new Long[process.keySet().size()]));
+            users = getUsers(process.keySet().toArray(new Long[process.keySet().size()]));
         }catch(APIEmptyResponse ex){
 	    return friends;
 	}
