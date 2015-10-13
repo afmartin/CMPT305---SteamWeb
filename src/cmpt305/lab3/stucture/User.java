@@ -59,6 +59,7 @@ public class User {
     private Map<User, Long> friends = null;
     //Game, Playtime
     private Map<Game, Long> games = null;
+    private long totalGameTime = -1;
 
     private final Map<Reqs, String> reqData = new HashMap();
 
@@ -136,25 +137,53 @@ public class User {
         return friends;
     }
 
-    public long getGameTime(final Genre... genres){
+    public long getGameTime(){
+        return getGameTime(null);
+    }
+
+    public long getGameTime(final Genre genre){
 	if(games == null) getGames();
 	Filter<Game> filter;
-	if(genres == null || genres.length == 0)
-	    filter = Filter.ANY;
+	if(genre == null)
+            if(totalGameTime != -1)
+                return totalGameTime;
+            else
+                filter = Filter.ANY;
 	else
 	    filter = new Filter<Game>(){
 	    @Override
 	    public boolean accept(Game t) {
-		for(Genre g : genres)
-		    for(Genre g2 : t.genres)
-			if(g.equals(g2)) return true;
+                for(Genre g2 : t.genres)
+                    if(genre.equals(g2)) return true;
 		return false;
 	    }
 	};
 	long time = 0;
 	for(Game g : games.keySet())
 	    if(filter.accept(g)) time += games.get(g);
+        if(filter == Filter.ANY)
+            totalGameTime = time;
 	return time;
+    }
+
+    public float getGameRatio(){
+        return getGameRatio(null);
+    }
+
+    public float getGameRatio(final Genre genres){
+        if(games == null) getGames();
+        if(totalGameTime == -1) getGameTime();
+        if(genres == null)
+            return 1;
+        return (float)getGameTime(genres) / totalGameTime;
+    }
+
+    public String getName(){
+        return personaname;
+    }
+
+    public long getId(){
+        return steamid;
     }
 
     @Override

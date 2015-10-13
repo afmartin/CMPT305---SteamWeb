@@ -1,5 +1,6 @@
 package cmpt305.lab3.api;
 
+import cmpt305.lab3.Settings;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public enum API {
@@ -28,8 +31,7 @@ public enum API {
     private static JSONObject crawlWeb(String strURL) throws APIEmptyResponse{
 	if(strURL == null) return null;
         int tries = 0;
-        //Static retry number... Sloppy.
-        while(tries++ < 3){
+        while(tries++ < Settings.MAX_RETRIES){
             try {
                 URL url = new URL(strURL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -44,7 +46,7 @@ public enum API {
                     while ((line = reader.readLine()) != null)
                         str.append(line);
                 }
-
+                
                 JSONObject out = new JSONObject(str.toString());
 
                 while(out.length() == 1){

@@ -57,9 +57,10 @@ public interface Generator<T> {
 	    //Need to fix later.
 	    //Map<API.Reqs, String> reqs = new HashMap();
 	    //reqs.put(API.Reqs.filters, "genres,name");
-	    //Should fix this later.
 
 	    List<Game> ret = new ArrayList();
+
+            boolean save = false;
 
 	    for(long id : ids){
 		if(Game.ALL_GAMES.containsKey(id)){
@@ -83,7 +84,7 @@ public interface Generator<T> {
 		List<Genre> genres = new ArrayList();
                 if(!json.getString("type").equals("game"))
                     continue;
-                //If a game doesn't have a genre, we don't care about it... I think...
+                //If a game doesn't have a genre, we don't care about it...
                 if(!json.has("genres"))
                     continue;
 		for(Object o : json.getJSONArray("genres")){
@@ -91,9 +92,11 @@ public interface Generator<T> {
 		    genres.add(new Genre(Integer.parseInt(o1.getString("id")), o1.getString("description")));
 		}
 
+                save = true;
 		ret.add(new Game(id, json.getString("name"), genres.toArray(new Genre[genres.size()])));
 	    }
 	    if(ret.isEmpty()) throw (new APIEmptyResponse());
+            if(save) Game.save();
 	    return ret;
 	}
     };
