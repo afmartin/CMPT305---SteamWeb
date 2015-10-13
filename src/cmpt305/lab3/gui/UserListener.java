@@ -5,4 +5,5 @@ import java.awt.Point;
 
 public interface UserListener {
     public void addUser(User u, Point p);
+    public void removeUser(User u);
 }

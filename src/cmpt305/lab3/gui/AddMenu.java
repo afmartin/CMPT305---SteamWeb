@@ -25,6 +25,7 @@ import javax.swing.UIManager;
 public class AddMenu extends JPopupMenu{
     private static final JMenuItem addUser = new JMenuItem("Add User");
     private static final JMenuItem removeUser = new JMenuItem("Remove User");
+    private static final JMenuItem addAll = new JMenuItem("Add All Friends");
     private static final Comparator<JMenuItem> JMENUSORT = new Comparator<JMenuItem>(){
 	@Override
 	public int compare(JMenuItem arg0, JMenuItem arg1) {
@@ -33,6 +34,7 @@ public class AddMenu extends JPopupMenu{
     };
     private final Map<JMenuItem, Long> friends = new HashMap();
     private final List<UserListener> listeners = new ArrayList();
+    private User curUser;
     private int x, y;
 
     private final MenuScroller scroller;
@@ -45,8 +47,14 @@ public class AddMenu extends JPopupMenu{
 		try{
 		    if(i.equals(addUser)){
 			throw new UnsupportedOperationException("Not supported yet (Prompt user for ID).");
+		    }else if(i.equals(removeUser)){
+			if(curUser != null) l.removeUser(curUser);
+		    }else if(i.equals(addAll)){
+			for(long lo : friends.values())
+			    l.addUser(User.getUser(lo), new Point(x, y));
+		    }else{
+			l.addUser(User.getUser(friends.get(i)), new Point(x, y));
 		    }
-		    l.addUser(User.getUser(friends.get(i)), new Point(x, y));
 		}catch(APIEmptyResponse ex){}
 	}
     };
@@ -70,13 +78,16 @@ public class AddMenu extends JPopupMenu{
 	friends.clear();
 	remove(removeUser);
 
+	curUser = u;
+
 	if(u == null){
 	    scroller.setTopFixedCount(1);
 	    return;
 	}
-	
-	scroller.setTopFixedCount(2);
+
+	scroller.setTopFixedCount(3);
 	add(removeUser);
+	add(addAll);
 	for(User f : u.getFriends().keySet()){
 	    JMenuItem item = new JMenuItem(f.getName());
 	    item.addActionListener(listener);
