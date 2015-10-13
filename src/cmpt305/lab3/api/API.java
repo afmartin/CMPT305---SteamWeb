@@ -36,6 +36,7 @@ public enum API {
                 URL url = new URL(strURL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
+		conn.setConnectTimeout(Settings.MAX_TIMEOUT_MS);
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("http.agent", Integer.toString((new Random()).nextInt(Integer.MAX_VALUE)));
 
@@ -46,7 +47,7 @@ public enum API {
                     while ((line = reader.readLine()) != null)
                         str.append(line);
                 }
-                
+
                 JSONObject out = new JSONObject(str.toString());
 
                 while(out.length() == 1){
@@ -55,13 +56,30 @@ public enum API {
                     out = (JSONObject)o;
                 }
 
+		if(out.length() == 0)
+		    throw new APIEmptyResponse();
+
 		if(out.has("success")){
 		    Object success = out.get("success");
 		    if(success.equals(0) || success.equals(false)) //THEY USE BOOLEAN AND 0/1 D:
 			throw new APIEmptyResponse();
 		}
                 return out;
-            }catch(IOException ex){}
+            }catch(APIEmptyResponse ex){
+		throw new APIEmptyResponse();
+	    }catch(IOException ex){
+		if(ex.getMessage().matches("Server returned HTTP response code: 429 for URL: .*")){
+		    //Need to notify gui of this somehow...
+		    //Maybe raise different exception, and let the GUI handle retries
+		    System.err.printf("Too Many Requests... Retrying in %sms\n", Settings.RETRY_TIME_MS);
+		    try {
+			Thread.sleep(Settings.RETRY_TIME_MS);
+		    } catch (InterruptedException ex1) {
+			Logger.getLogger(API.class.getName()).log(Level.SEVERE, null, ex1);
+		    }
+		    tries = 0;
+		}
+	    }
         }
         throw new APIEmptyResponse();
     }
@@ -104,7 +122,6 @@ public enum API {
 	    if(map.get(r) == null) continue;
 	    url.append(String.format("&%s=%s", r, map.get(r)));
 	}
-
 	return crawlWeb(url.toString());
     }
 }
