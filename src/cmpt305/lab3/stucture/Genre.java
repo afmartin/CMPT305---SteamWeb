@@ -1,24 +1,33 @@
 package cmpt305.lab3.stucture;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Genre {
-    public static final List<Genre> KNOWN = new ArrayList();
+    public static final Map<Long, Genre> KNOWN = new HashMap();
+
+    public static Genre getGenre(long id, String name){
+	if(KNOWN.containsKey(id))
+	    return KNOWN.get(id);
+	Genre g = new Genre(id, name);
+	KNOWN.put(id, g);
+	return g;
+    }
+
+    public static Genre getGenre(long id){
+	if(KNOWN.containsKey(id))
+	    return KNOWN.get(id);
+	//Throw exception?
+	//Request the genre from API somehow?
+	return null;
+    }
+
     public final String name;
     public final long id;
-    public Genre(long id, String name){
+
+    private Genre(long id, String name){
 	this.name = name;
 	this.id = id;
-	if(!KNOWN.contains(this))
-	    KNOWN.add(this);
-    }
-    public Genre(long id){
-	this.id = id;
-	if(KNOWN.contains(this))
-	    this.name = KNOWN.get(KNOWN.indexOf(this)).name;
-	else
-	    this.name = "Unknown";//Change this later. In fact, maybe remove this whole thing (It'll only be used for testing)
     }
 
     @Override

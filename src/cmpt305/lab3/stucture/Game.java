@@ -1,6 +1,7 @@
 package cmpt305.lab3.stucture;
 
 import cmpt305.lab3.FileIO;
+import cmpt305.lab3.Settings;
 import cmpt305.lab3.api.API;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
 import java.util.ArrayList;
@@ -29,17 +30,20 @@ public class Game {
 		throw new APIEmptyResponse();
 	    json = json.getJSONObject("data");
 	}catch(APIEmptyResponse ex){
-	    System.err.println("Failed to get game: " + appid);
+	    if(Settings.VERBOSE) System.err.println("Failed to get game: " + appid);
 	    Game.IGNORED_GAMES.add(appid);
 	    return null;
 	}
 
 	List<Genre> genres = new ArrayList();
-	if(!json.getString("type").equals("game") || !json.has("genres"))
+        if(!json.has("genres")){
+            if(Settings.VERBOSE) System.err.printf("Game has no genres: %s (%d)\n", json.getString("name"), appid);
+	    Game.IGNORED_GAMES.add(appid);
 	    return null;
+	}
 	for(Object o : json.getJSONArray("genres")){
 	    JSONObject o1 = (JSONObject)o;
-	    genres.add(new Genre(Integer.parseInt(o1.getString("id")), o1.getString("description")));
+	    genres.add(Genre.getGenre(Integer.parseInt(o1.getString("id")), o1.getString("description")));
 	}
 	return getGame(appid, json.getString("name"), genres.toArray(new Genre[genres.size()]));
     }
@@ -73,6 +77,14 @@ public class Game {
 
     public static void addIgnoredGame(long appid){
 	IGNORED_GAMES.add(appid);
+    }
+
+    public static int getIgnoredCount(){
+	return IGNORED_GAMES.size();
+    }
+
+    public static int getGameCount(){
+	return ALL_GAMES.size();
     }
 
     public final long appid;

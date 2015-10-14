@@ -71,7 +71,7 @@ public enum API {
 		if(ex.getMessage().matches("Server returned HTTP response code: 429 for URL: .*")){
 		    //Need to notify gui of this somehow...
 		    //Maybe raise different exception, and let the GUI handle retries
-		    System.err.printf("Too Many Requests... Retrying in %sms\n", Settings.RETRY_TIME_MS);
+		    if(Settings.VERBOSE) System.err.printf("Too Many Requests... Retrying in %sms\n", Settings.RETRY_TIME_MS);
 		    try {
 			Thread.sleep(Settings.RETRY_TIME_MS);
 		    } catch (InterruptedException ex1) {

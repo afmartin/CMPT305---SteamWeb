@@ -90,7 +90,7 @@ public class FileIO {
 	if(json.has("genres"))
 	    for(Object o : json.getJSONArray("genres")){
 		JSONObject j = (JSONObject)o;
-		new Genre(j.getLong("id"), j.getString("name"));
+		Genre.getGenre(j.getLong("id"), j.getString("name"));
 	    }
 
 	if(json.has("games"))
@@ -98,7 +98,7 @@ public class FileIO {
 		JSONObject j = (JSONObject)o;
 		final List<Genre> genres = new ArrayList();
 		for(Object o2 : j.getJSONArray("genres")){
-		    genres.add(new Genre((int)o2));
+		    genres.add(Genre.getGenre((int)o2));
 		}
 		Game.getGame(j.getLong("appid"), j.getString("name"), genres.toArray(new Genre[genres.size()]));
 	    }

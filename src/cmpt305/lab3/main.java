@@ -32,7 +32,7 @@ public class main {
         System.out.printf("Total Time: %ds\n", user.getGameTime());
         Map<Long, Genre> map = new TreeMap(Collections.reverseOrder());
         long totaltime = 0;
-        for(Genre g : Genre.KNOWN){
+        for(Genre g : Genre.KNOWN.values()){
             long time = user.getGameTime(g);
             totaltime+=time;
             if(time != 0)
@@ -56,7 +56,7 @@ public class main {
 
         Map<Float, Genre> map = new TreeMap(Collections.reverseOrder());
 
-        for(Genre g : Genre.KNOWN){
+        for(Genre g : Genre.KNOWN.values()){
             float
                     t1 = u1.getGameRatio(g),
                     t2 = u2.getGameRatio(g);

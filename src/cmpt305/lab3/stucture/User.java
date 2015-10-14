@@ -58,15 +58,17 @@ public class User {
 	    long steamid = Long.parseLong(o1.getString("steamid"));
 	    if(ALL_USERS.containsKey(steamid))
 		ret.add(ALL_USERS.get(steamid));
-	    else
-		ret.add(new User(
+            else{
+                User u = new User(
 			steamid,
 			o1.getString("personaname"),
 			o1.getString("profileurl"),
 			o1.getString("avatar"),
 			o1.getString("avatarmedium"),
-			o1.getString("avatarfull")
-		));
+			o1.getString("avatarfull"));
+		ret.add(u);
+                ALL_USERS.put(steamid, u);
+            }
 	}
 	if(ret.isEmpty()) throw (new APIEmptyResponse());
 	return ret;
@@ -99,7 +101,7 @@ public class User {
 
     private final Map<Reqs, String> reqData = new HashMap();
 
-    protected User(long steamid, String personaname, String profileurl, String avatarURL32, String avatarURL64, String avatarURL184){
+    private User(long steamid, String personaname, String profileurl, String avatarURL32, String avatarURL64, String avatarURL184){
         this.steamid = steamid;
         this.personaname = personaname;
         this.profileurl = profileurl;
@@ -108,8 +110,6 @@ public class User {
         this.avatarURL184 = avatarURL184;
 
         reqData.put(Reqs.steamid, Long.toString(steamid));
-
-        ALL_USERS.put(steamid, this);
     }
 
     public Map<Game, Long> getGames(){
@@ -119,7 +119,10 @@ public class User {
         JSONArray json;
         try {
 	    //If user only has 1 game, will it still be an array?
-	    json = API.GetOwnedGames.getData(reqData).getJSONArray("games");
+            JSONObject o = API.GetOwnedGames.getData(reqData);
+            if(!o.has("games"))
+                throw new APIEmptyResponse();
+	    json = o.getJSONArray("games");
         } catch (APIEmptyResponse ex) {
             return games;
         }
