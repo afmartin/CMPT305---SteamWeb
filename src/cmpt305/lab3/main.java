@@ -5,12 +5,17 @@ import cmpt305.lab3.gui.GUI;
 import cmpt305.lab3.stucture.Game;
 import cmpt305.lab3.stucture.Genre;
 import cmpt305.lab3.stucture.User;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class main {
     public static void printGames(Map<Game, Long> games){
@@ -66,8 +71,8 @@ public class main {
         }
     }
     public static void main(String[] args) {
-        Game.load();
-	
+	FileIO.load();
+
 	User user;
 	try {
 	    user = User.getUser(76561198122982968l); //Random User;
@@ -84,7 +89,5 @@ public class main {
         for(User u : user.getFriends().keySet()){
             printComparison(user, u);
         }
-
-	//printGames(user.getGames()); //Get the user's games, and playtime in seconds
     }
 }
