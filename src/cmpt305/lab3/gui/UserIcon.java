@@ -17,11 +17,15 @@ import javax.swing.JPanel;
  * @author MrMagaw <MrMagaw@gmail.com>
  */
 public class UserIcon extends JLabel{
-    private final User user;
-    UserIcon(User u){
-	super(u.getName());
-	user = u;
-	setBackground(Color.red);
-    }
-    public User getUser(){ return user; }
+	private final User user;
+
+	UserIcon(User u){
+		super(u.getName());
+		user = u;
+		setBackground(Color.red);
+	}
+
+	public User getUser(){
+		return user;
+	}
 }
