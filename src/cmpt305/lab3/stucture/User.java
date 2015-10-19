@@ -97,7 +97,7 @@ public class User{
 		return steamid;
 	}
 
-    //NON-Static
+	//NON-Static
 	private final long steamid;
 	private final String personaname, profileurl, avatarURL32, avatarURL64, avatarURL184;
 	//Friend, Friend_Since
@@ -221,7 +221,7 @@ public class User{
 		long time = 0;
 		for(Game g : games.keySet()){
 			if(filter.accept(g)){
-				time += games.get(g);
+				time += filter.equals(Filter.ANY) ? g.genres.length * games.get(g) : games.get(g);
 			}
 		}
 		if(filter == Filter.ANY){
@@ -230,21 +230,21 @@ public class User{
 		return time;
 	}
 
-	public float getGameRatio(){
+	public double getGameRatio(){
 		return getGameRatio(null);
 	}
 
-	public float getGameRatio(final Genre genres){
+	public double getGameRatio(final Genre genre){
 		if(games == null){
 			getGames();
 		}
 		if(totalGameTime == -1){
 			getGameTime();
 		}
-		if(genres == null){
+		if(genre == null){
 			return 1;
 		}
-		return (float) getGameTime(genres) / totalGameTime;
+		return (double) getGameTime(genre) / totalGameTime;
 	}
 
 	public String getName(){
