@@ -29,7 +29,7 @@ public class main{
 	public static void printGameTime(User user){
 		System.out.printf("Total Time: %s\n", formatTime(user.getGameTime()));
 		Map<Long, Genre> map = new TreeMap(Collections.reverseOrder());
-		for(Genre g : Genre.KNOWN.values()){
+		for(Genre g : Genre.getKnown()){
 			long time = user.getGameTime(g);
 			if(time >= .01f){
 				map.put(time, g);
@@ -55,7 +55,7 @@ public class main{
 
 		Map<Double, Genre> map = new TreeMap(Collections.reverseOrder());
 
-		for(Genre g : Genre.KNOWN.values()){
+		for(Genre g : Genre.getKnown()){
 			double t1 = u1.getGameRatio(g),
 					t2 = u2.getGameRatio(g);
 			if(t1 >= .0001f && t2 >= .0001f){

@@ -13,20 +13,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class FileIO{
 	public static void save(Map<Long, Game> ALL_GAMES, List<Long> IGNORED_GAMES){
-		List<Genre> l = new ArrayList();
+		int counter = 0;
+		Map<Genre, Integer> l = new HashMap();
 		JSONArray games = new JSONArray();
 		for(Game g : ALL_GAMES.values()){
 			JSONArray gen = new JSONArray();
 			for(Genre g1 : g.genres){
-				gen.put(g1.id);
-				if(!l.contains(g1)){
-					l.add(g1);
+				if(!l.containsKey(g1)){
+					l.put(g1, counter++);
 				}
+				gen.put(l.get(g1));
 			}
 
 			JSONObject o = new JSONObject();
@@ -36,10 +40,10 @@ public class FileIO{
 			games.put(o);
 		}
 		JSONArray genres = new JSONArray();
-		for(Genre g : l){
+		for(Entry<Genre, Integer> e : l.entrySet()){
 			JSONObject o = new JSONObject();
-			o.put("id", g.id);
-			o.put("name", g.name);
+			o.put("id", e.getValue());
+			o.put("name", e.getKey().name);
 			genres.put(o);
 		}
 		JSONArray ignoredGames = new JSONArray();
@@ -96,11 +100,13 @@ public class FileIO{
 		}
 
 		JSONObject json = new JSONObject(games.toString());
+		Map<Integer, Genre> genreMap = new HashMap();
 
 		if(json.has("genres")){
 			for(Object o : json.getJSONArray("genres")){
 				JSONObject j = (JSONObject) o;
-				Genre.getGenre(j.getLong("id"), j.getString("name"));
+				Genre g = Genre.getGenre(j.getString("name"));
+				genreMap.put(j.getInt("id"), g);
 			}
 		}
 
@@ -109,7 +115,7 @@ public class FileIO{
 				JSONObject j = (JSONObject) o;
 				final List<Genre> genres = new ArrayList();
 				for(Object o2 : j.getJSONArray("genres")){
-					genres.add(Genre.getGenre((int) o2));
+					genres.add(genreMap.get((int) o2));
 				}
 				Game.getGame(j.getLong("appid"), j.getString("name"), genres.toArray(new Genre[genres.size()]));
 			}

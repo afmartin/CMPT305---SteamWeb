@@ -20,23 +20,25 @@ public class GUI extends javax.swing.JFrame implements UserListener{
 		initComponents();
 		addMenu = new AddMenu();
 		addMenu.addUserListener(this);
-		filterList.setModel(new javax.swing.AbstractListModel(){
-			@Override
-			public int getSize(){
-				return Genre.KNOWN.size();
-			}
+		/*
+		 filterList.setModel(new javax.swing.AbstractListModel(){
+		 @Override
+		 public int getSize(){
+		 return Genre.getKnown().size();
+		 }
 
-			@Override
-			public Object getElementAt(int i){
-				return Genre.KNOWN.get(i);
-			}
-		});
-	//try {
+		 @Override
+		 public Object getElementAt(int i){
+		 return Genre.getKnown().get(i);
+		 }
+		 });
+		 */
+		//try {
 		//UserIcon u = new UserIcon(User.getUser(76561198122982968l));
 		JLabel u = new JLabel("test");
 		u.setLocation(50, 50);
 		contentPane.add(u);
-	//} catch (APIEmptyResponse ex) {
+		//} catch (APIEmptyResponse ex) {
 		//    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
 		//}
 	}
@@ -136,7 +138,7 @@ public class GUI extends javax.swing.JFrame implements UserListener{
 	 */
 	public static void main(String args[]){
 		/* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
 		 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
 		 */
@@ -156,7 +158,7 @@ public class GUI extends javax.swing.JFrame implements UserListener{
 		}catch(javax.swing.UnsupportedLookAndFeelException ex){
 			java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
-        //</editor-fold>
+		//</editor-fold>
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable(){

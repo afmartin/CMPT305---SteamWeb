@@ -1,41 +1,37 @@
 package cmpt305.lab3.stucture;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Objects;
 
 public class Genre{
-	public static final Map<Long, Genre> KNOWN = new HashMap();
+	// For pair: key is the official genre, value is the user genre
+	private static final Set<Genre> KNOWN = new HashSet();
 
-	public static Genre getGenre(long id, String name){
-		if(KNOWN.containsKey(id)){
-			return KNOWN.get(id);
+	public static Genre getGenre(String name){
+		Genre g = new Genre(name);
+
+		if(KNOWN.contains(g)){
+			return g;
 		}
-		Genre g = new Genre(id, name);
-		KNOWN.put(id, g);
+		KNOWN.add(g);
 		return g;
 	}
 
-	public static Genre getGenre(long id){
-		if(KNOWN.containsKey(id)){
-			return KNOWN.get(id);
-		}
-	//Throw exception?
-		//Request the genre from API somehow?
-		return null;
+	public static Set<Genre> getKnown(){
+		return new HashSet(KNOWN);
 	}
 
 	public final String name;
-	public final long id;
 
-	private Genre(long id, String name){
+	private Genre(String name){
 		this.name = name;
-		this.id = id;
 	}
 
 	@Override
 	public int hashCode(){
-		int hash = 5;
-		hash = 43 * hash + (int) (this.id ^ (this.id >>> 32));
+		int hash = 3;
+		hash = 83 * hash + Objects.hashCode(this.name);
 		return hash;
 	}
 
@@ -48,7 +44,10 @@ public class Genre{
 			return false;
 		}
 		final Genre other = (Genre) obj;
-		return this.id == other.id;
+		if(!Objects.equals(this.name, other.name)){
+			return false;
+		}
+		return true;
 	}
 
 	@Override

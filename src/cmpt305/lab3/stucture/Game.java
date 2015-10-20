@@ -3,11 +3,13 @@ package cmpt305.lab3.stucture;
 import cmpt305.lab3.FileIO;
 import cmpt305.lab3.Settings;
 import cmpt305.lab3.api.API;
+import cmpt305.lab3.api.StoreCrawler;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Game{
@@ -41,16 +43,33 @@ public class Game{
 		}
 
 		List<Genre> genres = new ArrayList();
+		boolean hasGenres = true;
 		if(!json.has("genres")){
-			if(Settings.VERBOSE){
-				System.err.printf("Game has no genres: %s (%d)\n", json.getString("name"), appid);
+			hasGenres = false;
+		}else{
+			for(Object o : json.getJSONArray("genres")){
+				JSONObject o1 = (JSONObject) o;
+				genres.add(Genre.getGenre(o1.getString("description")));
 			}
-			Game.IGNORED_GAMES.add(appid);
-			return null;
 		}
-		for(Object o : json.getJSONArray("genres")){
-			JSONObject o1 = (JSONObject) o;
-			genres.add(Genre.getGenre(Integer.parseInt(o1.getString("id")), o1.getString("description")));
+
+		try{
+			JSONArray user_genres = StoreCrawler.getUserGenres(appid);
+			for(Object o : user_genres){
+				JSONObject entry = (JSONObject) o;
+				Genre g = Genre.getGenre(entry.getString("name"));
+				if(!genres.contains(g)){
+					genres.add(g);
+				}
+			}
+		}catch(APIEmptyResponse ex){
+			if(!hasGenres){
+				if(Settings.VERBOSE){
+					System.err.printf("Game has no genres: %s (%d)\n", json.getString("name"), appid);
+				}
+				Game.IGNORED_GAMES.add(appid);
+				return null;
+			}
 		}
 		return getGame(appid, json.getString("name"), genres.toArray(new Genre[genres.size()]));
 	}
