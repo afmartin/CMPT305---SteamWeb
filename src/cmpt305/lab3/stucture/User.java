@@ -5,9 +5,11 @@ import cmpt305.lab3.api.API.Reqs;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -104,6 +106,7 @@ public class User{
 	private Map<User, Long> friends = null;
 	//Game, Playtime
 	private Map<Game, Long> games = null;
+	private final Map<User, Pair<Double, Map<Double, Genre>>> userCompatabilityMap = new HashMap();
 	private long totalGameTime = -1;
 
 	private final Map<Reqs, String> reqData = new HashMap();
@@ -188,6 +191,31 @@ public class User{
 		}
 
 		return friends;
+	}
+
+	public Pair<Double, Map<Double, Genre>> getCompatabilityWith(User u){
+		if(userCompatabilityMap.containsKey(u)){
+			return userCompatabilityMap.get(u);
+		}
+
+		Map<Double, Genre> map = new TreeMap(Collections.reverseOrder());
+
+		double totalScore = Genre.getKnown().stream().mapToDouble(g -> {
+			double t1 = getGameRatio(g),
+					t2 = u.getGameRatio(g);
+			if(t1 >= .000001f && t2 >= .000001f){
+				double score = 2 * (t1 * t2) / (t1 + t2);
+				map.put(score, g);
+				return score;
+			}
+			return 0;
+		}).sum();
+
+		Pair p = new Pair(totalScore, map);
+		userCompatabilityMap.put(u, p);
+		u.userCompatabilityMap.put(this, p);
+
+		return p;
 	}
 
 	public long getGameTime(){
