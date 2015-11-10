@@ -20,7 +20,23 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class FileIO{
-	public static void save(Map<Long, Game> ALL_GAMES, List<Long> IGNORED_GAMES){
+
+	private static final String SETTINGS_FILE = "settings.json";
+
+	public static void saveSettings(){
+		JSONObject settings = new JSONObject();
+
+		settings.put("max retries", Settings.getMaxRetries());
+		settings.put("max timeout ms", Settings.getMaxTimeoutMs());
+		settings.put("retry time ms", Settings.getRetryTimeMs());
+		settings.put("game database", Settings.getGameDatabase());
+		settings.put("verbose", Settings.isVerbose());
+		settings.put("key", Settings.getApiKey());
+
+		save(settings, SETTINGS_FILE, 0);
+	}
+
+	public static void saveGenres(Map<Long, Game> ALL_GAMES, List<Long> IGNORED_GAMES){
 		int counter = 0;
 		Map<Genre, Integer> l = new HashMap();
 		JSONArray games = new JSONArray();
@@ -56,12 +72,12 @@ public class FileIO{
 		json.put("games", games);
 		json.put("ignoredGames", ignoredGames);
 
-		save(json, 0);
+		save(json, Settings.getGameDatabase(), 0);
 	}
 
-	private static void save(JSONObject json, int tryCount){
+	private static void save(JSONObject json, String filename, int tryCount){
 		try{
-			File f = new File(Settings.GAME_DATABASE + "~");
+			File f = new File(filename + "~");
 			if(f.exists()){
 				f.delete();
 			}
@@ -69,37 +85,45 @@ public class FileIO{
 			try(PrintWriter out = new PrintWriter(f)){
 				out.print(json.toString());
 			}
-			File f0 = new File(Settings.GAME_DATABASE);
+			File f0 = new File(filename);
 			if(f0.exists()){
 				f0.delete();
 			}
 			f.renameTo(f0);
 		}catch(IOException ex){
-			if(tryCount < Settings.MAX_RETRIES){
-				save(json, ++tryCount);
+			if(tryCount < Settings.getMaxRetries()){
+				save(json, filename, ++tryCount);
 			}else{
 				Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 	}
 
-	public static void load(){
-		StringBuilder games = new StringBuilder();
-		try(BufferedReader data = new BufferedReader(new FileReader(Settings.GAME_DATABASE))){
+	public static String load(String filename){
+		StringBuilder json = new StringBuilder();
+		try(BufferedReader data = new BufferedReader(new FileReader(filename))){
 			while(data.ready()){
-				games.append(data.readLine());
+				json.append(data.readLine());
 			}
 		}catch(FileNotFoundException ex){
-			return; //No file.
+			return null; //No file.
 		}catch(IOException ex){
 			Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-			return;
+			return null;
 		}
-		if(games.length() == 0){
-			return;
+		if(json.length() == 0){
+			return null;
 		}
 
-		JSONObject json = new JSONObject(games.toString());
+		return json.toString();
+	}
+
+	public static void loadGames(){
+		String games = load(Settings.getGameDatabase());
+		if(games == null){
+			return;
+		}
+		JSONObject json = new JSONObject(games);
 		Map<Integer, Genre> genreMap = new HashMap();
 
 		if(json.has("genres")){
@@ -126,5 +150,20 @@ public class FileIO{
 				Game.addIgnoredGame((int) o);
 			}
 		}
+	}
+
+	public static void loadSettings(){
+		String settings = load(SETTINGS_FILE);
+		if(settings == null){
+			return;
+		}
+		JSONObject json = new JSONObject(settings);
+
+		Settings.setMaxRetries(json.getInt("max retries"));
+		Settings.setMaxTimeoutMs(json.getInt("max timeout ms"));
+		Settings.setRetryTimeMs(json.getLong("retry time ms"));
+		Settings.setGameDatabase(json.getString("game database"));
+		Settings.setVerbose(json.getBoolean("verbose"));
+		Settings.setApiKey(json.getString("key"));
 	}
 }

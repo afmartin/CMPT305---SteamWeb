@@ -35,7 +35,7 @@ public class Game{
 			}
 			json = json.getJSONObject("data");
 		}catch(APIEmptyResponse ex){
-			if(Settings.VERBOSE){
+			if(Settings.isVerbose()){
 				System.err.println("Failed to get game: " + appid);
 			}
 			Game.IGNORED_GAMES.add(appid);
@@ -64,7 +64,7 @@ public class Game{
 			}
 		}catch(APIEmptyResponse ex){
 			if(!hasGenres){
-				if(Settings.VERBOSE){
+				if(Settings.isVerbose()){
 					System.err.printf("Game has no genres: %s (%d)\n", json.getString("name"), appid);
 				}
 				Game.IGNORED_GAMES.add(appid);
@@ -100,7 +100,7 @@ public class Game{
 		}
 
 		if(preSizeA != ALL_GAMES.size() || preSizeI != IGNORED_GAMES.size()){
-			FileIO.save(ALL_GAMES, IGNORED_GAMES);
+			FileIO.saveGenres(ALL_GAMES, IGNORED_GAMES);
 		}
 
 		return ret;
@@ -116,6 +116,12 @@ public class Game{
 
 	public static int getGameCount(){
 		return ALL_GAMES.size();
+	}
+
+	public static void clear(){
+		ALL_GAMES.clear();
+		IGNORED_GAMES.clear();
+		FileIO.saveGenres(ALL_GAMES, IGNORED_GAMES);
 	}
 
 	public final long appid;

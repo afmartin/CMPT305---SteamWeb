@@ -3,10 +3,12 @@ package cmpt305.lab3.stucture;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Objects;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 
 public class Genre{
-	// For pair: key is the official genre, value is the user genre
-	private static final Set<Genre> KNOWN = new HashSet();
+	private static final ObservableSet<Genre> KNOWN = FXCollections.observableSet(new HashSet());
 
 	public static Genre getGenre(String name){
 		Genre g = new Genre(name);
@@ -20,6 +22,14 @@ public class Genre{
 
 	public static Set<Genre> getKnown(){
 		return new HashSet(KNOWN);
+	}
+
+	public static void addObserver(SetChangeListener l){
+		KNOWN.addListener(l);
+	}
+
+	public static void clear(){
+		KNOWN.clear();
 	}
 
 	public final String name;
