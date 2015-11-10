@@ -107,7 +107,8 @@ public class main{
 	}
 
 	public static void main(String[] args){
-		FileIO.load();
+		FileIO.loadSettings();
+		FileIO.loadGames();
 
 		User user;
 		try{
