@@ -10,6 +10,7 @@ import cmpt305.lab3.stucture.User;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JFrame;
@@ -31,6 +32,7 @@ public class CompareGraph extends JFrame{
 	private final List<User> compare = new ArrayList<>();
 	private User main;
 	private final DefaultCategoryDataset barGraph, compareGraph;
+	private final Set<Genre> selectedGennres;
 
 	public void addUser(User u){
 		if(u == null || compare.contains(u) || main.equals(u)){
@@ -55,7 +57,11 @@ public class CompareGraph extends JFrame{
 	}
 
 	private void addData(User u){
-		Genre.getKnown().stream().forEach(g -> barGraph.addValue(u.getGameRatio(g), g.name, u.getName()));
+		Genre.getKnown().stream().forEach(g -> {
+			if(selectedGennres.contains(g)){
+				barGraph.addValue(u.getGameRatio(g), g.name, u.getName());
+			}
+		});
 		addCompareData(u);
 	}
 
@@ -76,11 +82,11 @@ public class CompareGraph extends JFrame{
 		barGraph.removeColumn(uName);
 	}
 
-	public CompareGraph(User main, Set<User> users){
-		this(main, (User[]) users.toArray(new User[users.size()]));
+	public CompareGraph(User main, Set<Genre> genres, Set<User> users){
+		this(main, genres, (User[]) users.toArray(new User[users.size()]));
 	}
 
-	public CompareGraph(User main, User... users){
+	public CompareGraph(User main, Set<Genre> genres, User... users){
 		super("Comparison");
 		{
 			Dimension d = new Dimension(500, 500);
@@ -90,6 +96,7 @@ public class CompareGraph extends JFrame{
 			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		}
 		this.main = main;
+		this.selectedGennres = genres;
 
 		barGraph = new DefaultCategoryDataset();
 		compareGraph = new DefaultCategoryDataset();

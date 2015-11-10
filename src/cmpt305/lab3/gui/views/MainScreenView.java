@@ -2,6 +2,7 @@ package cmpt305.lab3.gui.views;
 
 import cmpt305.lab3.gui.controllers.SettingsController;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
@@ -40,6 +41,10 @@ public class MainScreenView extends javax.swing.JFrame{
 
 	public void setCompareButtonListener(ActionListener ae){
 		compareButton.addActionListener(ae);
+	}
+
+	public List<String> getGenresSelected(){
+		return genreList.getSelectedValuesList();
 	}
 
 	/**
@@ -242,7 +247,7 @@ public class MainScreenView extends javax.swing.JFrame{
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-		genreList.setSelectionInterval(0, genreList.getModel().getSize());
+		genreList.setSelectionInterval(0, genreList.getModel().getSize() - 1);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void compareButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compareButtonActionPerformed

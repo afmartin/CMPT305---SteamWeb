@@ -127,6 +127,14 @@ public class MainScreenController{
 		}
 	}
 
+	private Set<Genre> getSelected(){
+		Set<Genre> genres = new HashSet();
+		VIEW.getGenresSelected().stream().forEach((g) -> {
+			genres.add(Genre.getGenre(g));
+		});
+		return genres;
+	}
+
 	private void showAddUser(){
 		GET_USER_CONTROLLER.toggle();
 	}
@@ -170,7 +178,7 @@ public class MainScreenController{
 			for(int i = 1; i < USERS.size(); i++){
 				others.add(User.getUser(USERS.get(i).toString()));
 			}
-			graph = new CompareGraph(main, others);
+			graph = new CompareGraph(main, getSelected(), others);
 			graph.pack();
 			graph.setVisible(true);
 		}catch(APIEmptyResponse ex){

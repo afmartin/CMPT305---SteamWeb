@@ -49,7 +49,10 @@ public class Game{
 		}else{
 			for(Object o : json.getJSONArray("genres")){
 				JSONObject o1 = (JSONObject) o;
-				genres.add(Genre.getGenre(o1.getString("description")));
+				String genre = o1.getString("description");
+				if(!genre.equalsIgnoreCase("Free to Play")){
+					genres.add(Genre.getGenre(genre));
+				}
 			}
 		}
 
