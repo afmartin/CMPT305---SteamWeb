@@ -15,14 +15,14 @@ import org.json.JSONObject;
 
 public enum API{
 	//JSON {"friends":[{"steamid":id, "friend_since":time}...]}
-	GetFriendList(Inter.ISteamUser, Version.v1, API.BASE, API.KEY, Reqs.steamid),
-	GetOwnedGames(Inter.IPlayerService, Version.v1, API.BASE, API.KEY, Reqs.steamid),
-	GetSchemaForGame(Inter.ISteamUserStats, Version.v2, API.BASE, API.KEY, Reqs.appid),
+	GetFriendList(Inter.ISteamUser, Version.v1, API.BASE, true, Reqs.steamid),
+	GetOwnedGames(Inter.IPlayerService, Version.v1, API.BASE, true, Reqs.steamid),
+	GetSchemaForGame(Inter.ISteamUserStats, Version.v2, API.BASE, true, Reqs.appid),
 	//JSON {"steamid":id, "success":[01]}
-	ResolveVanityURL(Inter.ISteamUser, Version.v1, API.BASE, API.KEY, Reqs.vanityurl),
+	ResolveVanityURL(Inter.ISteamUser, Version.v1, API.BASE, true, Reqs.vanityurl),
 	//JSON {"players":[]}
-	GetPlayerSummaries(Inter.ISteamUser, Version.v2, API.BASE, API.KEY, Reqs.steamids),
-	appdetails(null, null, API.STORE_BASE, null, Reqs.appids, Reqs.filters);
+	GetPlayerSummaries(Inter.ISteamUser, Version.v2, API.BASE, true, Reqs.steamids),
+	appdetails(null, null, API.STORE_BASE, false, Reqs.appids, Reqs.filters);
 
 	private static enum Inter{
 		ISteamUser, ISteamNews, ISteamUserStats, IPlayerService
@@ -41,12 +41,12 @@ public enum API{
 			return null;
 		}
 		int tries = 0;
-		while(tries++ < Settings.MAX_RETRIES){
+		while(tries++ < Settings.getMaxRetries()){
 			try{
 				URL url = new URL(strURL);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-				conn.setConnectTimeout(Settings.MAX_TIMEOUT_MS);
+				conn.setConnectTimeout(Settings.getMaxTimeoutMs());
 				conn.setRequestMethod("GET");
 				conn.setRequestProperty("http.agent", Integer.toString((new Random()).nextInt(Integer.MAX_VALUE)));
 
@@ -87,11 +87,11 @@ public enum API{
 				if(ex.getMessage().matches("Server returned HTTP response code: 429 for URL: .*")){
 					//Need to notify gui of this somehow...
 					//Maybe raise different exception, and let the GUI handle retries
-					if(Settings.VERBOSE){
-						System.err.printf("Too Many Requests... Retrying in %sms\n", Settings.RETRY_TIME_MS);
+					if(Settings.isVerbose()){
+						System.err.printf("Too Many Requests... Retrying in %sms\n", Settings.getRetryTimeMs());
 					}
 					try{
-						Thread.sleep(Settings.RETRY_TIME_MS);
+						Thread.sleep(Settings.getRetryTimeMs());
 					}catch(InterruptedException ex1){
 						Logger.getLogger(API.class.getName()).log(Level.SEVERE, null, ex1);
 					}
@@ -103,30 +103,25 @@ public enum API{
 	}
 
 	private static final String BASE = "http://api.steampowered.com",
-			STORE_BASE = "http://store.steampowered.com/api",
-			KEY = Key.KEY;
+			STORE_BASE = "http://store.steampowered.com/api";
 
 	private final Inter inter;
 	private final Version version;
+	private final boolean uses_key;
 	private final Reqs[] reqs;
 	private final StringBuilder URL = new StringBuilder();
 
-	private API(Inter i, Version v, String base, String key, Reqs... r){
+	private API(Inter i, Version v, String base, boolean uses_key, Reqs... r){
 		this.inter = i;
 		this.version = v;
 		this.reqs = r;
+		this.uses_key = uses_key;
 		for(Object s : new Object[]{base, inter == null ? null : inter, toString(), version == null ? null : version}){
 			if(s == null){
 				continue;
 			}
 			this.URL.append(s.toString());
 			this.URL.append("/");
-		}
-		if(key != null){
-			this.URL.append("?key=");
-			this.URL.append(KEY);
-		}else{
-			this.URL.append("?");
 		}
 	}
 
@@ -139,6 +134,13 @@ public enum API{
 			return null;
 		}
 		StringBuilder url = new StringBuilder(URL);
+		if(uses_key){
+			url.append("?key=");
+			url.append(Settings.getApiKey());
+		}else{
+			url.append("?");
+		}
+
 		for(Reqs r : reqs){
 			if(map.get(r) == null){
 				continue;
