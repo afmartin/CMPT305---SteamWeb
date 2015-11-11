@@ -118,6 +118,13 @@ public class Game{
 		return ALL_GAMES.size();
 	}
 
+	public static void clear(){
+		ALL_GAMES.clear();
+		IGNORED_GAMES.clear();
+		Genre.clear();
+		FileIO.saveGames(ALL_GAMES, IGNORED_GAMES);
+	}
+
 	public final long appid;
 	public final String name;
 	public final Genre[] genres;

@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,8 +27,8 @@ public class User{
 		}
 	}
 	//STATIC
-	protected static final Map<Long, User> ALL_USERS = new HashMap();
-	protected static final Map<String, Long> VANITY_MAP = new HashMap();
+	protected static final ObservableMap<Long, User> ALL_USERS = FXCollections.observableMap(new HashMap<>());
+	protected static final Map<String, Long> VANITY_MAP = new HashMap<>();
 
 	public static User getUser(long steamid) throws APIEmptyResponse{
 		if(ALL_USERS.containsKey(steamid)){
@@ -41,6 +44,14 @@ public class User{
 		}
 
 		return getUsers(resolveVanity(vanityURL)).get(0);
+	}
+
+	public static void addListener(MapChangeListener l){
+		ALL_USERS.addListener(l);
+	}
+
+	public static void removeListener(MapChangeListener l){
+		ALL_USERS.removeListener(l);
 	}
 
 	public static List<User> getUsers(Long... ids) throws APIEmptyResponse{
@@ -92,8 +103,10 @@ public class User{
 		reqs.put(Reqs.vanityurl, vanityURL);
 
 		JSONObject info = API.ResolveVanityURL.getData(reqs);
+		if(!info.has("steamid")){
+			throw new APIEmptyResponse();
+		}
 		long steamid = Long.parseLong(info.getString("steamid"));
-
 		VANITY_MAP.put(vanityURL, steamid);
 
 		return steamid;
@@ -101,7 +114,7 @@ public class User{
 
 	//NON-Static
 	private final long steamid;
-	private final String personaname, profileurl, avatarURL32, avatarURL64, avatarURL184;
+	private final String personaname, profileurl, avatarURL32, avatarURL64, avatarURL184, vanity;
 	//Friend, Friend_Since
 	private Map<User, Long> friends = null;
 	//Game, Playtime
@@ -118,8 +131,13 @@ public class User{
 		this.avatarURL32 = avatarURL32;
 		this.avatarURL64 = avatarURL64;
 		this.avatarURL184 = avatarURL184;
+		this.vanity = this.profileurl.substring(29, this.profileurl.length() - 1);;
 
 		reqData.put(Reqs.steamid, Long.toString(steamid));
+	}
+
+	public String getVanity(){
+		return this.vanity;
 	}
 
 	public Map<Game, Long> getGames(){
