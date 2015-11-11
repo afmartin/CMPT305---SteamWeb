@@ -1,6 +1,6 @@
 package cmpt305.lab3;
 
-import cmpt305.lab3.exceptions.APIEmptyResponse;
+import cmpt305.lab3.gui.controllers.MainScreenController;
 import cmpt305.lab3.stucture.Game;
 import cmpt305.lab3.stucture.Genre;
 import cmpt305.lab3.stucture.Pair;
@@ -110,21 +110,6 @@ public class main{
 		FileIO.loadSettings();
 		FileIO.loadGames();
 
-		User user;
-		try{
-			user = User.getUser(76561198079246791l); //Random User;
-		}catch(APIEmptyResponse ex){
-			System.err.println("User not found.");
-			return;
-		}
-		System.out.println(user);
-		printGameTime(user);
-		for(User u : user.getFriends().keySet()){
-			System.out.println(u);
-			printGameTime(u);
-		}
-		for(User u : user.getFriends().keySet()){
-			printComparison(user, u);
-		}
+		new MainScreenController();
 	}
 }
