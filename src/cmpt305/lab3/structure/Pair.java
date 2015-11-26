@@ -1,4 +1,4 @@
-package cmpt305.lab3.stucture;
+package cmpt305.lab3.structure;
 
 public class Pair<K, V>{
 	private final K k;

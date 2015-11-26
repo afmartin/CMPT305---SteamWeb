@@ -1,9 +1,9 @@
 package cmpt305.lab3.gui.controllers;
 
 import cmpt305.lab3.Settings;
-import cmpt305.lab3.stucture.Game;
+import cmpt305.lab3.structure.Game;
 import cmpt305.lab3.gui.views.SettingsView;
-import cmpt305.lab3.stucture.Genre;
+import cmpt305.lab3.structure.Genre;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

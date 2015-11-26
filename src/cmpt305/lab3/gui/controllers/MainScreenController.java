@@ -1,10 +1,9 @@
 package cmpt305.lab3.gui.controllers;
 
 import cmpt305.lab3.exceptions.APIEmptyResponse;
-import cmpt305.lab3.gui.CompareGraph;
 import cmpt305.lab3.gui.views.MainScreenView;
-import cmpt305.lab3.stucture.Genre;
-import cmpt305.lab3.stucture.User;
+import cmpt305.lab3.structure.Genre;
+import cmpt305.lab3.structure.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;

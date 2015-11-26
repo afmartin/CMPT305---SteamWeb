@@ -1,4 +1,4 @@
-package cmpt305.lab3.stucture;
+package cmpt305.lab3.structure;
 
 public interface Filter<T>{
 	public static final Filter ANY = new Filter(){

@@ -1,10 +1,10 @@
 package cmpt305.lab3;
 
 import cmpt305.lab3.gui.controllers.MainScreenController;
-import cmpt305.lab3.stucture.Game;
-import cmpt305.lab3.stucture.Genre;
-import cmpt305.lab3.stucture.Pair;
-import cmpt305.lab3.stucture.User;
+import cmpt305.lab3.structure.Game;
+import cmpt305.lab3.structure.Genre;
+import cmpt305.lab3.structure.Pair;
+import cmpt305.lab3.structure.User;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class main{
@@ -41,10 +42,10 @@ public class main{
 	}
 
 	public static void printFriends(User user){
-		Map<User, Long> friends = user.getFriends(); //Get the user's friends, and friend since info (unix timestamp long)
+		Set<User> friends = user.getFriends(); //Get the user's friends, and friend since info (unix timestamp long)
 		System.out.printf("Friends with %d people:\n", friends.size());
-		for(Entry<User, Long> friend : friends.entrySet()){
-			System.out.printf("\t%s\n\t\tSince: %s\n", friend.getKey(), new Date(friend.getValue() * 1000));
+		for(User friend : friends){
+			System.out.printf("\t%s\n", friend);
 		}
 	}
 

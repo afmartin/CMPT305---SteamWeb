@@ -1,4 +1,4 @@
-package cmpt305.lab3.stucture;
+package cmpt305.lab3.structure;
 
 import cmpt305.lab3.FileIO;
 import cmpt305.lab3.Settings;

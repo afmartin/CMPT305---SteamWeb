@@ -1,4 +1,4 @@
-package cmpt305.lab3.stucture;
+package cmpt305.lab3.structure;
 
 import cmpt305.lab3.api.API;
 import cmpt305.lab3.api.API.Reqs;
@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -17,15 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class User{
-	public class Friendship{
-		public final User friend;
-		public final long friend_since;
-
-		public Friendship(User friend, long friend_since){
-			this.friend = friend;
-			this.friend_since = friend_since;
-		}
-	}
 	//STATIC
 	protected static final ObservableMap<Long, User> ALL_USERS = FXCollections.observableMap(new HashMap<>());
 	protected static final Map<String, Long> VANITY_MAP = new HashMap<>();
@@ -116,7 +109,7 @@ public class User{
 	private final long steamid;
 	private final String personaname, profileurl, avatarURL32, avatarURL64, avatarURL184, vanity;
 	//Friend, Friend_Since
-	private Map<User, Long> friends = null;
+	private Set<User> friends = null;
 	//Game, Playtime
 	private Map<Game, Long> games = null;
 	private final Map<User, Pair<Double, Map<Double, Genre>>> userCompatabilityMap = new HashMap();
@@ -131,7 +124,7 @@ public class User{
 		this.avatarURL32 = avatarURL32;
 		this.avatarURL64 = avatarURL64;
 		this.avatarURL184 = avatarURL184;
-		this.vanity = this.profileurl.substring(29, this.profileurl.length() - 1);;
+		this.vanity = this.profileurl.substring(29, this.profileurl.length() - 1);
 
 		reqData.put(Reqs.steamid, Long.toString(steamid));
 	}
@@ -164,7 +157,7 @@ public class User{
 			JSONObject o1 = (JSONObject) o;
 			process.put(o1.getLong("appid"), o1.getLong("playtime_forever"));
 		}
-		List<Game> curGames = null;
+		List<Game> curGames;
 		curGames = Game.getGames(process.keySet().toArray(new Long[process.keySet().size()]));
 
 		if(curGames == null){
@@ -178,11 +171,11 @@ public class User{
 		return games;
 	}
 
-	public Map<User, Long> getFriends(){
+	public Set<User> getFriends(){
 		if(friends != null){
 			return friends;
 		}
-		friends = new HashMap();
+		friends = new HashSet();
 
 		JSONArray json;
 		try{
@@ -191,22 +184,20 @@ public class User{
 			return friends;
 		}
 
-		Map<Long, Long> process = new HashMap();
+		Set<Long> process = new HashSet();
 
 		for(Object o : json){
 			JSONObject o1 = (JSONObject) o;
-			process.put(Long.parseLong(o1.getString("steamid")), o1.getLong("friend_since"));
+			process.add(Long.parseLong(o1.getString("steamid")));
 		}
 		List<User> users;
 		try{
-			users = getUsers(process.keySet().toArray(new Long[process.keySet().size()]));
+			users = getUsers(process.toArray(new Long[process.size()]));
 		}catch(APIEmptyResponse ex){
 			return friends;
 		}
 
-		for(User u : users){
-			friends.put(u, process.get(u.steamid));
-		}
+		users.stream().forEach((u) -> friends.add(u));
 
 		return friends;
 	}

@@ -3,7 +3,7 @@ package cmpt305.lab3.gui.controllers;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
 import cmpt305.lab3.gui.views.GetUserView;
 import cmpt305.lab3.main;
-import cmpt305.lab3.stucture.User;
+import cmpt305.lab3.structure.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

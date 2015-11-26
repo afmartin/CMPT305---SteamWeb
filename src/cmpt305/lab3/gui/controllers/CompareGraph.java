@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cmpt305.lab3.gui;
+package cmpt305.lab3.gui.controllers;
 
-import cmpt305.lab3.stucture.Genre;
-import cmpt305.lab3.stucture.User;
+import cmpt305.lab3.structure.Genre;
+import cmpt305.lab3.structure.User;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;

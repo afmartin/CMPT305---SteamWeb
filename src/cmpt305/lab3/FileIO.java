@@ -1,7 +1,7 @@
 package cmpt305.lab3;
 
-import cmpt305.lab3.stucture.Game;
-import cmpt305.lab3.stucture.Genre;
+import cmpt305.lab3.structure.Game;
+import cmpt305.lab3.structure.Genre;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
