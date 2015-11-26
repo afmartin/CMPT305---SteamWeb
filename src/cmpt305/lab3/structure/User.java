@@ -135,7 +135,7 @@ public class User{
 
 	public Map<Game, Long> getGames(){
 		if(games != null){
-			return games;
+			return new HashMap(games);
 		}
 		games = new HashMap();
 
@@ -148,7 +148,7 @@ public class User{
 			}
 			json = o.getJSONArray("games");
 		}catch(APIEmptyResponse ex){
-			return games;
+			return new HashMap(games);
 		}
 
 		Map<Long, Long> process = new HashMap();
@@ -161,19 +161,19 @@ public class User{
 		curGames = Game.getGames(process.keySet().toArray(new Long[process.keySet().size()]));
 
 		if(curGames == null){
-			return games;
+			return new HashMap(games);
 		}
 
-		for(Game g : curGames){
+		curGames.stream().forEach((g) -> {
 			games.put(g, process.get(g.appid));
-		}
+		});
 
-		return games;
+		return new HashMap(games);
 	}
 
 	public Set<User> getFriends(){
 		if(friends != null){
-			return friends;
+			return new HashSet(friends);
 		}
 		friends = new HashSet();
 
@@ -181,7 +181,7 @@ public class User{
 		try{
 			json = API.GetFriendList.getData(reqData).getJSONArray("friends");
 		}catch(APIEmptyResponse ex){
-			return friends;
+			return new HashSet(friends);
 		}
 
 		Set<Long> process = new HashSet();
@@ -194,12 +194,12 @@ public class User{
 		try{
 			users = getUsers(process.toArray(new Long[process.size()]));
 		}catch(APIEmptyResponse ex){
-			return friends;
+			return new HashSet(friends);
 		}
 
 		users.stream().forEach((u) -> friends.add(u));
 
-		return friends;
+		return new HashSet(friends);
 	}
 
 	public Pair<Double, Map<Double, Genre>> getCompatabilityWith(User u){
@@ -243,24 +243,21 @@ public class User{
 				filter = Filter.ANY;
 			}
 		}else{
-			filter = new Filter<Game>(){
-				@Override
-				public boolean accept(Game t){
-					for(Genre g2 : t.genres){
-						if(genre.equals(g2)){
-							return true;
-						}
+			filter = (Game t) -> {
+				for(Genre g2 : t.genres){
+					if(genre.equals(g2)){
+						return true;
 					}
-					return false;
 				}
+				return false;
 			};
 		}
 		long time = 0;
-		for(Game g : games.keySet()){
-			if(filter.accept(g)){
-				time += filter.equals(Filter.ANY) ? g.genres.length * games.get(g) : games.get(g);
-			}
-		}
+		time = games.keySet().stream()
+				.filter((g) -> (filter.accept(g)))
+				.map((g) -> filter.equals(Filter.ANY) ? g.genres.length * games.get(g) : games.get(g))
+				.reduce(time, (accumulator, _item) -> accumulator + _item);
+
 		if(filter == Filter.ANY){
 			totalGameTime = time;
 		}
