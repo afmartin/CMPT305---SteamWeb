@@ -21,7 +21,7 @@ public class SettingsController{
 			final String WARNING = "Are you sure you want to reset the cache?  It will take a long time "
 					+ "to collect data from scratch!";
 			Object[] options = {"Yes", "No"};
-			int value = view.showConfirmDialog(WARNING, options);
+			int value = VIEW.showConfirmDialog(WARNING, options);
 			if(value == 0){
 				clearCache();
 				System.out.println("Cleared the cache.");
@@ -43,7 +43,7 @@ public class SettingsController{
 	private class ConfirmButtonListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent ae){
-			String key = view.getAppId();
+			String key = VIEW.getAppId();
 			if(key != null){
 				Settings.setApiKey(key);
 			}
@@ -51,14 +51,14 @@ public class SettingsController{
 		}
 	}
 
-	private final SettingsView view;
+	private final SettingsView VIEW;
 
 	public void quit(){
-		view.dispose();
+		VIEW.dispose();
 	}
 
 	public void toggle(){
-		view.setVisible(!view.isVisible());
+		VIEW.setVisible(!VIEW.isVisible());
 	}
 
 	private void clearCache(){
@@ -70,12 +70,12 @@ public class SettingsController{
 		LOG_BUTTON_LISTENER = new LogButtonListener();
 		CONFIRM_BUTTON_LISTENER = new ConfirmButtonListener();
 
-		view = new SettingsView();
-		view.addSettingButtonListener(this.SETTINGS_BUTTON_LISTENER);
-		view.addLogButtonListener(this.LOG_BUTTON_LISTENER);
-		view.addConfirmButtonListener(this.CONFIRM_BUTTON_LISTENER);
-		view.setAppId(Settings.getApiKey());
-		view.pack();
-		view.setVisible(false);
+		VIEW = new SettingsView();
+		VIEW.addSettingButtonListener(this.SETTINGS_BUTTON_LISTENER);
+		VIEW.addLogButtonListener(this.LOG_BUTTON_LISTENER);
+		VIEW.addConfirmButtonListener(this.CONFIRM_BUTTON_LISTENER);
+		VIEW.setAppId(Settings.getApiKey());
+		VIEW.pack();
+		VIEW.setVisible(false);
 	}
 }

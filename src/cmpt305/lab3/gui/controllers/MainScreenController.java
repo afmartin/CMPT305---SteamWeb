@@ -1,34 +1,53 @@
 package cmpt305.lab3.gui.controllers;
 
-import cmpt305.lab3.exceptions.APIEmptyResponse;
 import cmpt305.lab3.gui.views.MainScreenView;
 import cmpt305.lab3.structure.Genre;
 import cmpt305.lab3.structure.User;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import cmpt305.lab3.structure.listener.GenreDataSetListener;
+import cmpt305.lab3.structure.listener.UserDataSetListener;
+import cmpt305.lab3.structure.listener.UserModelListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.collections.MapChangeListener;
-import javafx.collections.SetChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javax.swing.AbstractListModel;
-import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 
-public class MainScreenController{
+public class MainScreenController implements GenreDataSetListener, UserDataSetListener, UserModelListener{
 	private final MainScreenView VIEW;
 	private final SettingsController SETTINGS;
 	private final GetUserController GET_USER_CONTROLLER = new GetUserController();
 	private final GenreListModel GENRES = new GenreListModel();
-	private final DefaultListModel USERS = new DefaultListModel();
-	private final GenreDataSetListener GENRES_LISTENER = new GenreDataSetListener();
-	private final UserDataSetListener USERS_LISTENER = new UserDataSetListener();
+	private final UserListModel USERS = new UserListModel();
 
-	private CompareGraph graph;
+	private final CompareGraphController GRAPH_CONTROLLER;
+
+	@Override
+	public void addGenre(Genre g){
+		GENRES.addElement(g.toString());
+	}
+
+	@Override
+	public void removeGenre(Genre g){
+		GENRES.removeElement(g.toString());
+	}
+
+	@Override
+	public void addUser(User u){
+		USERS.addElement(u);
+	}
+
+	@Override
+	public void removeUser(User u){
+		USERS.removeElement(u);
+	}
+
+	@Override
+	public void userModelChanged(){
+		GRAPH_CONTROLLER.updateUsers(USERS.getList());
+	}
 
 	/*
 	 NOTE: invokeLater is used to ensure thread safety when adding or removing
@@ -75,33 +94,69 @@ public class MainScreenController{
 			super();
 			GENRE_LIST = new ArrayList();
 		}
-
 	}
 
-	private class GenreDataSetListener implements SetChangeListener{
+	private class UserListModel extends AbstractListModel{
+		private final ObservableList<User> USER_LIST;
+
+		public UserListModel(){
+			this.USER_LIST = FXCollections.observableArrayList(new ArrayList<>());
+		}
+
 		@Override
-		public void onChanged(Change change){
-			if(change.wasAdded()){
-				GENRES.addElement(change.getElementAdded().toString());
+		public int getSize(){
+			return USER_LIST.size();
+		}
+
+		@Override
+		public Object getElementAt(int index){
+			return USER_LIST.get(index).getName();
+		}
+
+		public void addElement(final User u){
+			SwingUtilities.invokeLater(() -> {
+				USER_LIST.add(u);
+				int index = USER_LIST.indexOf(u);
+				this.fireIntervalAdded(UserListModel.this, index, index);
+			});
+		}
+
+		public void removeElement(final User u){
+			SwingUtilities.invokeLater(() -> {
+				int index = USER_LIST.indexOf(u);
+				USER_LIST.remove(u);
+				this.fireIntervalRemoved(UserListModel.this, index, index);
+			});
+		}
+
+		public void removeElementAt(int index){
+			if(index != -1){
+				removeElement(USER_LIST.get(index));
 			}
-			if(change.wasRemoved()){
-				GENRES.removeElement(change.getElementRemoved().toString());
-			}
+		}
+
+		public void clear(){
+			SwingUtilities.invokeLater(() -> {
+				USER_LIST.clear();
+				this.fireIntervalRemoved(UserListModel.this, 0, 0);
+			});
+		}
+
+		public void addListener(ListChangeListener l){
+			USER_LIST.addListener(l);
+		}
+
+		public void removeListener(ListChangeListener l){
+			USER_LIST.removeListener(l);
+		}
+
+		public List<User> getList(){
+			return new ArrayList<>(USER_LIST);
 		}
 	}
 
-	private class UserDataSetListener implements MapChangeListener{
-		@Override
-		public void onChanged(Change change){
-			if(change.wasAdded()){
-				User user = (User) change.getValueAdded();
-				USERS.addElement(user.getVanity());
-			}
-			if(change.wasRemoved()){
-				User user = (User) change.getValueRemoved();
-				USERS.removeElement(user.getVanity());
-			}
-		}
+	private void updateGraphGenreList(List<Object> selections){
+		GRAPH_CONTROLLER.updateGenres(selections);
 	}
 
 	private void showAddUser(){
@@ -109,8 +164,9 @@ public class MainScreenController{
 	}
 
 	public MainScreenController(){
-		User.addListener(USERS_LISTENER);
-		Genre.addListener(GENRES_LISTENER);
+		User.addListener(this);
+		Genre.addListener(this);
+		USERS.addListener(this);
 
 		for(Genre g : Genre.getKnown()){
 			GENRES.addElement(g.toString());
@@ -125,39 +181,12 @@ public class MainScreenController{
 		SETTINGS = new SettingsController();
 
 		VIEW.addSettingButtonListener(ae -> SETTINGS.toggle());
-		VIEW.addClearButtonListener(ae -> clearUserCompare());
+		VIEW.addClearButtonListener(ae -> USERS.clear());
 		VIEW.addUserButtonListener(ae -> showAddUser());
-		VIEW.addCompareButtonListener(ae -> createGraph());
-	}
+		VIEW.addGenreListSelectionListener(se -> updateGraphGenreList(VIEW.getGenresSelected()));
+		VIEW.addRemoveButtonListener(ae -> USERS.removeElementAt(VIEW.getUserListSelectionIndex()));
 
-	private void createGraph(){
-		if(USERS.size() < 2){
-			System.err.println("There must be at least two users to compare.");
-			return;
-		}
-		try{
-			User main = User.getUser(USERS.get(0).toString());
-			Set<User> others = new HashSet();
-			for(int i = 1; i < USERS.size(); i++){
-				others.add(User.getUser(USERS.get(i).toString()));
-			}
-			graph = new CompareGraph(main, others);
-			graph.pack();
-			graph.setVisible(true);
-		}catch(APIEmptyResponse ex){
-			System.err.println("Invalid vanity");
-		}
-	}
-
-	public void addUserCompare(final String username){
-		SwingUtilities.invokeLater(() -> USERS.addElement(username));
-	}
-
-	public void removeUserCompare(final String username){
-		SwingUtilities.invokeLater(() -> USERS.removeElement(username));
-	}
-
-	private void clearUserCompare(){
-		SwingUtilities.invokeLater(() -> USERS.clear());
+		GRAPH_CONTROLLER = new CompareGraphController(null);
+		VIEW.setGraphPanel(GRAPH_CONTROLLER.getView());
 	}
 }
