@@ -7,6 +7,7 @@ import cmpt305.lab3.main;
 import cmpt305.lab3.structure.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.SwingUtilities;
 
 public class GetUserController{
 	private final GetUserView VIEW = new GetUserView();
@@ -61,8 +62,10 @@ public class GetUserController{
 				VIEW.noApiKey();
 				VIEW.dispose();
 			}else{
-				VIEW.pack();
-				VIEW.setVisible(true);
+				SwingUtilities.invokeLater(() -> {
+					VIEW.pack();
+					VIEW.setVisible(true);
+				});
 			}
 		}else{
 			VIEW.dispose();
