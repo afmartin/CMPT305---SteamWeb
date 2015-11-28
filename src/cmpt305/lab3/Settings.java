@@ -1,12 +1,23 @@
 package cmpt305.lab3;
 
 public class Settings{
+	public static enum Avatar{
+		None(null), Small("avatar"), Medium("avatarmedium"), Large("avatarfull");
+
+		public final String API_KEY;
+
+		private Avatar(String key){
+			API_KEY = key;
+		}
+	}
+
 	private static int maxRetries = 3,
 			maxTimeoutMs = 30000;
 	private static long retryTimeMs = 60000l;
 	private static String gameDatabase = "games.json";
 	private static boolean verbose = true;
 	private static String apiKey = "";
+	private static Avatar avatar = Avatar.None;
 
 	public static String getApiKey(){
 		return apiKey;
@@ -59,6 +70,15 @@ public class Settings{
 
 	public static void setVerbose(boolean verbose){
 		Settings.verbose = verbose;
+		FileIO.saveSettings();
+	}
+
+	public static Avatar getAvatar(){
+		return avatar;
+	}
+
+	public static void setAvatar(Avatar avatar){
+		Settings.avatar = avatar;
 		FileIO.saveSettings();
 	}
 }

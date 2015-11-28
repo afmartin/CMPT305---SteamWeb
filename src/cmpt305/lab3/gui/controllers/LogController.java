@@ -3,6 +3,7 @@ package cmpt305.lab3.gui.controllers;
 import cmpt305.lab3.gui.views.LogView;
 import com.wordpress.tips4java.MessageConsole;
 import java.awt.Color;
+import javax.swing.JPanel;
 import javax.swing.JTextPane;
 
 public class LogController{
@@ -20,12 +21,7 @@ public class LogController{
 
 	}
 
-	public void toggle(){
-		if(!VIEW.isDisplayable()){
-			VIEW.pack();
-			VIEW.setVisible(true);
-		}else{
-			VIEW.dispose();
-		}
+	public JPanel getView(){
+		return VIEW;
 	}
 }

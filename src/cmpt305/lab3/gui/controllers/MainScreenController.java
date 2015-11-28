@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 public class MainScreenController implements GenreDataSetListener, UserDataSetListener, UserModelListener{
 	private final MainScreenView VIEW;
 	private final SettingsController SETTINGS;
+	private final LogController LOG;
 	private final GetUserController GET_USER_CONTROLLER = new GetUserController();
 	private final GenreListModel GENRES = new GenreListModel();
 	private final UserListModel USERS = new UserListModel();
@@ -179,8 +180,8 @@ public class MainScreenController implements GenreDataSetListener, UserDataSetLi
 		VIEW.setVisible(true);
 
 		SETTINGS = new SettingsController();
+		LOG = new LogController();
 
-		VIEW.addSettingButtonListener(ae -> SETTINGS.toggle());
 		VIEW.addClearButtonListener(ae -> USERS.clear());
 		VIEW.addUserButtonListener(ae -> showAddUser());
 		VIEW.addGenreListSelectionListener(se -> updateGraphGenreList(VIEW.getGenresSelected()));
@@ -188,5 +189,7 @@ public class MainScreenController implements GenreDataSetListener, UserDataSetLi
 
 		GRAPH_CONTROLLER = new CompareGraphController(null);
 		VIEW.setGraphPanel(GRAPH_CONTROLLER.getView());
+		VIEW.setSettingsPanel(SETTINGS.getView());
+		VIEW.setLogPanel(LOG.getView());
 	}
 }

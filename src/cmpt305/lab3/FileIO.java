@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class FileIO{
@@ -32,6 +33,7 @@ public class FileIO{
 		settings.put("game database", Settings.getGameDatabase());
 		settings.put("verbose", Settings.isVerbose());
 		settings.put("key", Settings.getApiKey());
+		settings.put("avatar", Settings.getAvatar());
 
 		save(settings, SETTINGS_FILE, 0);
 	}
@@ -159,11 +161,16 @@ public class FileIO{
 		}
 		JSONObject json = new JSONObject(settings);
 
-		Settings.setMaxRetries(json.getInt("max retries"));
-		Settings.setMaxTimeoutMs(json.getInt("max timeout ms"));
-		Settings.setRetryTimeMs(json.getLong("retry time ms"));
-		Settings.setGameDatabase(json.getString("game database"));
-		Settings.setVerbose(json.getBoolean("verbose"));
-		Settings.setApiKey(json.getString("key"));
+		try{
+			Settings.setMaxRetries(json.getInt("max retries"));
+			Settings.setMaxTimeoutMs(json.getInt("max timeout ms"));
+			Settings.setRetryTimeMs(json.getLong("retry time ms"));
+			Settings.setGameDatabase(json.getString("game database"));
+			Settings.setVerbose(json.getBoolean("verbose"));
+			Settings.setApiKey(json.getString("key"));
+			Settings.setAvatar(Settings.Avatar.valueOf(json.getString("avatar")));
+		}catch(JSONException e){
+			System.err.println("Could not read settings... resetting.");
+		}
 	}
 }

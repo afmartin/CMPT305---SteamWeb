@@ -2,6 +2,7 @@ package cmpt305.lab3.gui.views;
 
 import cmpt305.lab3.gui.controllers.SettingsController;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.AbstractListModel;
@@ -79,7 +80,15 @@ public class MainScreenView extends javax.swing.JFrame{
 
 	public void setGraphPanel(JPanel panel){
 		graphHolder = new JScrollPane(panel);
-		jTabbedPane2.add("Compare Graph", graphHolder);
+		mainMenuTabbedPane.add("Compare Graph", graphHolder);
+	}
+
+	public void setSettingsPanel(JPanel panel){
+		mainMenuTabbedPane.add("Settings", panel);
+	}
+
+	public void setLogPanel(JPanel panel){
+		mainMenuTabbedPane.add("Log", panel);
 	}
 
 	/**
@@ -104,7 +113,7 @@ public class MainScreenView extends javax.swing.JFrame{
         jLabel2 = new javax.swing.JLabel();
         addUserButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
+        mainMenuTabbedPane = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -243,14 +252,14 @@ public class MainScreenView extends javax.swing.JFrame{
             .addGap(0, 478, Short.MAX_VALUE)
         );
 
-        jTabbedPane2.addTab("Viewer", jPanel2);
+        mainMenuTabbedPane.addTab("Viewer", jPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
+                .addComponent(mainMenuTabbedPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -261,7 +270,7 @@ public class MainScreenView extends javax.swing.JFrame{
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTabbedPane2)
+                        .addComponent(mainMenuTabbedPane)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -297,7 +306,11 @@ public class MainScreenView extends javax.swing.JFrame{
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTabbedPane mainMenuTabbedPane;
     private javax.swing.JButton removeButton;
     // End of variables declaration//GEN-END:variables
+
+	public void setSettingsPanel(JPanel view, String CENTER){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }
