@@ -1,15 +1,20 @@
 package cmpt305.lab3.gui.views;
 
 import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 
 public class GetUserView extends javax.swing.JFrame{
 
-	public String getUsername(){
+	public String getInput(){
 		return jTextField1.getText();
 	}
 
-	public void setInfoText(){
-		jLabel1.setText("User is not valid!");
+	public void invalidInput(){
+		JOptionPane.showMessageDialog(this, "Could not find user. Perhaps user's profile is private, or API key is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	public void noApiKey(){
+		JOptionPane.showMessageDialog(this, "There is not Steam API key set!  Go to settings to set your API key.", "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void clearUsername(){
@@ -41,46 +46,42 @@ public class GetUserView extends javax.swing.JFrame{
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Add User");
-        setMaximumSize(new java.awt.Dimension(233, 119));
         setMinimumSize(new java.awt.Dimension(233, 119));
         setResizable(false);
 
         jButton1.setText("Get User");
 
-        jLabel1.setText("Please enter a vanity name:");
+        jTextPane1.setContentType("text/html"); // NOI18N
+        jTextPane1.setText("<html>\n  <head>\n\n  </head>\n  <body>\n    <p style=\"margin-top: 0\">\n      Please enter a Steam vanity name or Steam ID for a user you would like to add.  Examples:\n    </p>\n\n    <ul>\n\t<li>https://steamcommunity.com/id/<span style=\"color:blue\">vanity</span></li>\n\t<li>http://steamcommunity.com/profiles/<span style=\"color:green\">steam ID</span></li>\n    </ul>\n\n\t\n  </body>\n</html>\n");
+        jScrollPane1.setViewportView(jTextPane1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(67, 67, 67)
-                                .addComponent(jButton1)))
-                        .addGap(0, 71, Short.MAX_VALUE)))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGap(5, 5, 5))
         );
 
         pack();
@@ -88,7 +89,8 @@ public class GetUserView extends javax.swing.JFrame{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextPane jTextPane1;
     // End of variables declaration//GEN-END:variables
 }
