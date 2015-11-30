@@ -50,11 +50,11 @@ public class CompareGraphController{
 		if(u == null || (!main.equals(u) && !COMPARE.contains(u))){
 			return;
 		}
-		User old = COMPARE.remove(0);
 		if(main.equals(u)){
-			main = old;
+			main = COMPARE.remove(0);
 			removeData(u, true);
 		}else{
+			COMPARE.remove(u);
 			removeData(u, false);
 		}
 

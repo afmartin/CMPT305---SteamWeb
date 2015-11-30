@@ -46,7 +46,6 @@ public class GetUserController{
 		new Thread(() -> {
 			System.out.println(CONFIRMED_USER);
 			CONFIRMED_USER.getGames();
-			main.printGameTime(CONFIRMED_USER);
 		}).start();
 
 	}
