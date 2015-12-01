@@ -1,6 +1,7 @@
 package cmpt305.lab3.gui.views;
 
 import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import javax.swing.JOptionPane;
 
 public class GetUserView extends javax.swing.JFrame{
@@ -27,6 +28,22 @@ public class GetUserView extends javax.swing.JFrame{
 
 	public void removeButtonListener(ActionListener l){
 		jButton1.removeActionListener(l);
+	}
+
+	public void disableButton(){
+		jButton1.setEnabled(false);
+	}
+
+	public void enableButton(){
+		jButton1.setEnabled(true);
+	}
+
+	public void addTextListener(KeyListener l){
+		jTextField1.addKeyListener(l);
+	}
+
+	public void removeTextListener(KeyListener l){
+		jTextField1.removeKeyListener(l);
 	}
 
 	/**

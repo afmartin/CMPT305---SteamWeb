@@ -7,45 +7,64 @@ import cmpt305.lab3.main;
 import cmpt305.lab3.structure.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.SwingUtilities;
 
 public class GetUserController{
 	private final GetUserView VIEW = new GetUserView();
-	private final AddButtonListener ADD_LISTENER = new AddButtonListener();
+	private final EnterKeyListener KEY_LISTENER = new EnterKeyListener();
 
-	private class AddButtonListener implements ActionListener{
+	private class EnterKeyListener implements KeyListener{
+
 		@Override
-		public void actionPerformed(ActionEvent ae){
+		public void keyTyped(KeyEvent e){
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e){
+			int key = e.getKeyCode();
+			if(key == KeyEvent.VK_ENTER){
+				initAdd();
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e){
+		}
+	}
+
+	public void initAdd(){
+		if(VIEW.getInput().length() > 0){
+			VIEW.disableButton();
 			addUser(VIEW.getInput());
 		}
 	}
 
 	public void addUser(String input){
-		User user = null;
-		try{
-			user = User.getUser(input);
-		}catch(APIEmptyResponse ex){
-			try{
-				long id = Long.parseLong(input);
-				user = User.getUser(id);
-			}catch(APIEmptyResponse | NumberFormatException ex1){
-				notValidUsername();
-				return;
-			}
-		}
-
-		if(user == null){
-			notValidUsername();
-			return;
-		}
-
-		VIEW.clearUsername();
-		VIEW.dispose();
-
-		final User CONFIRMED_USER = user;
 		new Thread(() -> {
-			System.out.println(CONFIRMED_USER);
-			CONFIRMED_USER.getGames();
+			User user;
+			try{
+				user = User.getUser(input);
+			}catch(APIEmptyResponse ex){
+				try{
+					long id = Long.parseLong(input);
+					user = User.getUser(id);
+				}catch(APIEmptyResponse | NumberFormatException ex1){
+					user = null;
+				}
+			}
+
+			if(user == null){
+				notValidUsername();
+				VIEW.enableButton();
+			}else{
+				VIEW.clearUsername();
+				VIEW.enableButton();
+				VIEW.dispose();
+				System.out.println(user);
+				user.getGames();
+			}
 		}).start();
 
 	}
@@ -72,7 +91,8 @@ public class GetUserController{
 	}
 
 	public GetUserController(){
-		VIEW.addButtonListener(ADD_LISTENER);
+		VIEW.addButtonListener((ae) -> initAdd());
+		VIEW.addTextListener(KEY_LISTENER);
 		VIEW.dispose();
 	}
 }
