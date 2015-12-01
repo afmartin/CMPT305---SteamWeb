@@ -4,6 +4,7 @@ import cmpt305.lab3.Settings;
 import cmpt305.lab3.Settings.Avatar;
 import cmpt305.lab3.structure.Game;
 import cmpt305.lab3.gui.views.SettingsView;
+import cmpt305.lab3.structure.User;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +44,11 @@ public class SettingsController{
 			String key = VIEW.getAppId();
 			if(key != null){
 				Settings.setApiKey(key);
-				Settings.setAvatar(VIEW.getAvatarSelection());
+				if(Settings.getAvatar().equals(VIEW.getAvatarSelection())){
+					Settings.setAvatar(VIEW.getAvatarSelection());
+					User.updateAvatars();
+				}
+
 			}
 		}
 	}

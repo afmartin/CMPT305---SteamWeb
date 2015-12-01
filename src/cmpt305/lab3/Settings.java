@@ -2,13 +2,7 @@ package cmpt305.lab3;
 
 public class Settings{
 	public static enum Avatar{
-		None(null), Small("avatar"), Medium("avatarmedium"), Large("avatarfull");
-
-		public final String API_KEY;
-
-		private Avatar(String key){
-			API_KEY = key;
-		}
+		None, Small, Medium, Large;
 	}
 
 	private static int maxRetries = 3,

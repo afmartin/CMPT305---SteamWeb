@@ -1,8 +1,13 @@
 package cmpt305.lab3.structure;
 
+import cmpt305.lab3.Settings;
 import cmpt305.lab3.api.API;
 import cmpt305.lab3.api.API.Reqs;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,9 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
+import javax.imageio.ImageIO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,6 +53,10 @@ public class User{
 
 	public static void removeListener(MapChangeListener l){
 		ALL_USERS.removeListener(l);
+	}
+
+	public static void updateAvatars(){
+		ALL_USERS.values().stream().forEach((User u) -> u.downloadAvatar());
 	}
 
 	public static List<User> getUsers(Long... ids) throws APIEmptyResponse{
@@ -114,6 +126,7 @@ public class User{
 	private Map<Game, Long> games = null;
 	private final Map<User, Pair<Double, Map<Double, Genre>>> userCompatabilityMap = new HashMap();
 	private Pair<Integer, Long> totalGameTime = null;
+	private Image avatar;
 
 	private final Map<Reqs, String> reqData = new HashMap();
 
@@ -125,8 +138,34 @@ public class User{
 		this.avatarURL64 = avatarURL64;
 		this.avatarURL184 = avatarURL184;
 		this.vanity = this.profileurl.substring(29, this.profileurl.length() - 1);
+		downloadAvatar();
 
 		reqData.put(Reqs.steamid, Long.toString(steamid));
+	}
+
+	private void downloadAvatar(){
+		new Thread(() -> {
+			try{
+				switch(Settings.getAvatar()){
+					case None:
+						avatar = null;
+						break;
+					case Small:
+						avatar = ImageIO.read(new URL(avatarURL32));
+						break;
+					case Medium:
+						avatar = ImageIO.read(new URL(avatarURL64));
+						break;
+					case Large:
+						avatar = ImageIO.read(new URL(avatarURL184));
+						break;
+				}
+			}catch(MalformedURLException ex){
+				Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+			}catch(IOException ex){
+				Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}).start();
 	}
 
 	public String getVanity(){
