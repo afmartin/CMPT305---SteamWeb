@@ -113,7 +113,7 @@ public class User{
 	//Game, Playtime
 	private Map<Game, Long> games = null;
 	private final Map<User, Pair<Double, Map<Double, Genre>>> userCompatabilityMap = new HashMap();
-	private long totalGameTime = -1;
+	private Pair<Integer, Long> totalGameTime = null;
 
 	private final Map<Reqs, String> reqData = new HashMap();
 
@@ -231,14 +231,21 @@ public class User{
 		return getGameTime(null);
 	}
 
+	private boolean isCurrentTotalTime(){
+		if(totalGameTime == null || games == null){
+			return false;
+		}
+		return totalGameTime.getKey() == games.hashCode();
+	}
+
 	public long getGameTime(final Genre genre){
 		if(games == null){
 			getGames();
 		}
 		Filter<Game> filter;
 		if(genre == null){
-			if(totalGameTime != -1){
-				return totalGameTime;
+			if(isCurrentTotalTime()){
+				return totalGameTime.getValue();
 			}else{
 				filter = Filter.ANY;
 			}
@@ -259,7 +266,7 @@ public class User{
 				.reduce(time, (accumulator, _item) -> accumulator + _item);
 
 		if(filter == Filter.ANY){
-			totalGameTime = time;
+			totalGameTime = new Pair(games.hashCode(), time);
 		}
 		return time;
 	}
@@ -272,13 +279,13 @@ public class User{
 		if(games == null){
 			getGames();
 		}
-		if(totalGameTime == -1){
+		if(!isCurrentTotalTime()){
 			getGameTime();
 		}
 		if(genre == null){
 			return 1;
 		}
-		return (double) getGameTime(genre) / totalGameTime;
+		return (double) getGameTime(genre) / totalGameTime.getValue();
 	}
 
 	public String getName(){
