@@ -42,7 +42,7 @@ public class GetUserController{
 	}
 
 	public void addUser(String input){
-		new Thread(() -> {
+		SwingUtilities.invokeLater(new Thread(() -> {
 			User user;
 			try{
 				user = User.getUser(input);
@@ -63,9 +63,10 @@ public class GetUserController{
 				VIEW.enableButton();
 				VIEW.dispose();
 				System.out.println(user);
-				user.getGames();
+				final User USER = user;
+				new Thread(() -> USER.getGames()).start();
 			}
-		}).start();
+		}));
 
 	}
 
