@@ -110,6 +110,7 @@ public class CompareGraphController implements ListChangeListener<User>{
 	private void clearData(){
 		BAR_GRAPH.clear();
 		COMPARE_GRAPH.clear();
+		COMPARE.clear();
 		main = null;
 	}
 
@@ -158,7 +159,6 @@ public class CompareGraphController implements ListChangeListener<User>{
 
 	@Override
 	public void onChanged(Change<? extends User> c){
-		c.getList().stream().forEach((i) -> System.out.println(":: - " + i));
 		updateUsers(new ArrayList(c.getList()));
 	}
 }

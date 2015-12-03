@@ -78,9 +78,10 @@ public class GetUserController{
 					VIEW.dispose();
 					System.out.println(USER);
 					notify(USER);
-					new Thread(() -> USER.getGames()).start();
 				}
 			});
+			USER.getGames();
+			notify(USER);
 		}).start();
 
 	}

@@ -29,7 +29,9 @@ public class UserListModel extends AbstractListModel implements UserDataSetListe
 
 	public void addElement(final User u){
 		SwingUtilities.invokeLater(() -> {
-			USER_LIST.add(u);
+			if(!USER_LIST.contains(u)){
+				USER_LIST.add(u);
+			}
 			int index = USER_LIST.indexOf(u);
 			this.fireIntervalAdded(UserListModel.this, index, index);
 		});
