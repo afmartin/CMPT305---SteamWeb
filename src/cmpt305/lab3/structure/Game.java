@@ -87,13 +87,14 @@ public class Game{
 		if(appids == null || appids.length == 0){
 			return null;
 		}
-		List<Game> ret = new ArrayList();
+		List<Game> ret = new ArrayList<>();
 
 		int preSizeA = ALL_GAMES.size();
 		int preSizeI = IGNORED_GAMES.size();
-
-		for(long id : appids){
-			Game g = getGame(id);
+		int size = appids.length;
+		for(int i = 0; i < size; ++i){
+			System.out.printf("Getting game (%d)... (%d/%d)\n", appids[i], i, size);
+			Game g = getGame(appids[i]);
 			if(g != null){
 				ret.add(g);
 			}

@@ -80,8 +80,10 @@ public class GetUserController{
 					notify(USER);
 				}
 			});
-			USER.getGames();
-			notify(USER);
+			if(USER != null){
+				USER.getGames();
+				notify(USER);
+			}
 		}).start();
 
 	}

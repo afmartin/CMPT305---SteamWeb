@@ -124,7 +124,6 @@ public class User{
 	private Set<User> friends = null;
 	//Game, Playtime
 	private Map<Game, Long> games = null;
-	private final Map<User, Pair<Double, Map<Double, Genre>>> userCompatabilityMap = new HashMap();
 	private Pair<Integer, Long> totalGameTime = null;
 	private Image avatar;
 
@@ -202,7 +201,6 @@ public class User{
 		if(curGames == null){
 			return new HashMap(games);
 		}
-
 		curGames.stream().forEach((g) -> {
 			games.put(g, process.get(g.appid));
 		});
@@ -245,9 +243,6 @@ public class User{
 		if(u.equals(this)){
 			return new Pair(1.0, null);
 		}
-		if(userCompatabilityMap.containsKey(u)){
-			return userCompatabilityMap.get(u);
-		}
 
 		Map<Double, Genre> map = new TreeMap(Collections.reverseOrder());
 
@@ -263,8 +258,6 @@ public class User{
 		}).sum();
 
 		Pair p = new Pair(totalScore, map);
-		userCompatabilityMap.put(u, p);
-		u.userCompatabilityMap.put(this, p);
 
 		return p;
 	}
