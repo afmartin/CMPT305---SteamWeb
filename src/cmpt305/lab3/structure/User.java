@@ -210,7 +210,7 @@ public class User{
 		return new HashMap(games);
 	}
 
-	public Set<User> getFriends(){
+	public synchronized Set<User> getFriends(){
 		if(friends != null){
 			return new HashSet(friends);
 		}
@@ -241,7 +241,10 @@ public class User{
 		return new HashSet(friends);
 	}
 
-	public Pair<Double, Map<Double, Genre>> getCompatabilityWith(User u){
+	public synchronized Pair<Double, Map<Double, Genre>> getCompatabilityWith(User u){
+		if(u.equals(this)){
+			return new Pair(1.0, null);
+		}
 		if(userCompatabilityMap.containsKey(u)){
 			return userCompatabilityMap.get(u);
 		}
@@ -277,7 +280,7 @@ public class User{
 		return totalGameTime.getKey() == games.hashCode();
 	}
 
-	public long getGameTime(final Genre genre){
+	public synchronized long getGameTime(final Genre genre){
 		if(games == null){
 			getGames();
 		}

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import javafx.collections.ListChangeListener;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -25,7 +26,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
  *
  * @author MrMagaw <MrMagaw@gmail.com>
  */
-public class CompareGraphController{
+public class CompareGraphController implements ListChangeListener<User>{
 	private final ChartPanel VIEW;
 	private final List<User> COMPARE = new ArrayList<>();
 	private List<Genre> genre_list = new ArrayList<>();
@@ -88,9 +89,9 @@ public class CompareGraphController{
 		if(main != null){
 			addData(main);
 		}
-		for(User u : COMPARE){
+		COMPARE.stream().forEach((u) -> {
 			addData(u);
-		}
+		});
 	}
 
 	private void removeData(User u, boolean resetCompareData){
@@ -153,5 +154,11 @@ public class CompareGraphController{
 
 		VIEW = new ChartPanel(t);
 		setSize();
+	}
+
+	@Override
+	public void onChanged(Change<? extends User> c){
+		c.getList().stream().forEach((i) -> System.out.println(":: - " + i));
+		updateUsers(new ArrayList(c.getList()));
 	}
 }

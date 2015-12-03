@@ -68,8 +68,8 @@ public class GenreListModel extends AbstractListModel implements GenreDataSetLis
 	}
 
 	private void sort(){
-		Collections.sort(GENRE_LIST);
-		fireContentsChanged(this, 0, GENRE_LIST.size() - 1);
+		Collections.sort(DISPLAY_LIST);
+		fireContentsChanged(this, 0, DISPLAY_LIST.size() - 1);
 	}
 
 	public GenreListModel(){

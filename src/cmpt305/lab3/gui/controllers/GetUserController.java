@@ -3,17 +3,18 @@ package cmpt305.lab3.gui.controllers;
 import cmpt305.lab3.Settings;
 import cmpt305.lab3.exceptions.APIEmptyResponse;
 import cmpt305.lab3.gui.views.GetUserView;
-import cmpt305.lab3.main;
 import cmpt305.lab3.structure.User;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import cmpt305.lab3.structure.listener.UserDataSetListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.SwingUtilities;
 
 public class GetUserController{
 	private final GetUserView VIEW = new GetUserView();
 	private final EnterKeyListener KEY_LISTENER = new EnterKeyListener();
+	private final Set<UserDataSetListener> listeners = new HashSet();
 
 	private class EnterKeyListener implements KeyListener{
 
@@ -34,6 +35,14 @@ public class GetUserController{
 		}
 	}
 
+	public void addListener(UserDataSetListener u){
+		listeners.add(u);
+	}
+
+	public void removeListener(UserDataSetListener u){
+		listeners.remove(u);
+	}
+
 	public void initAdd(){
 		if(VIEW.getInput().length() > 0){
 			VIEW.disableButton();
@@ -41,8 +50,12 @@ public class GetUserController{
 		}
 	}
 
+	private void notify(User u){
+		listeners.stream().forEach((UserDataSetListener l) -> l.addUser(u));
+	}
+
 	public void addUser(String input){
-		SwingUtilities.invokeLater(new Thread(() -> {
+		new Thread(() -> {
 			User user;
 			try{
 				user = User.getUser(input);
@@ -54,19 +67,21 @@ public class GetUserController{
 					user = null;
 				}
 			}
-
-			if(user == null){
-				notValidUsername();
-				VIEW.enableButton();
-			}else{
-				VIEW.clearUsername();
-				VIEW.enableButton();
-				VIEW.dispose();
-				System.out.println(user);
-				final User USER = user;
-				new Thread(() -> USER.getGames()).start();
-			}
-		}));
+			final User USER = user;
+			SwingUtilities.invokeLater(() -> {
+				if(USER == null){
+					notValidUsername();
+					VIEW.enableButton();
+				}else{
+					VIEW.clearUsername();
+					VIEW.enableButton();
+					VIEW.dispose();
+					System.out.println(USER);
+					notify(USER);
+					new Thread(() -> USER.getGames()).start();
+				}
+			});
+		}).start();
 
 	}
 

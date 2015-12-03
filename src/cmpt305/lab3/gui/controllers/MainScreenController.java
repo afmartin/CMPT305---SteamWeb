@@ -4,24 +4,18 @@ import cmpt305.lab3.gui.controllers.models.GenreListModel;
 import cmpt305.lab3.gui.controllers.models.UserListModel;
 import cmpt305.lab3.gui.views.MainScreenView;
 import cmpt305.lab3.structure.Genre;
-import cmpt305.lab3.structure.User;
-import cmpt305.lab3.structure.listener.UserModelListener;
 import java.util.List;
 
-public class MainScreenController implements UserModelListener{
+public class MainScreenController{
 	private final MainScreenView VIEW;
-	private final SettingsController SETTINGS;
-	private final LogController LOG;
-	private final GetUserController GET_USER_CONTROLLER = new GetUserController();
+
 	private final GenreListModel GENRES = new GenreListModel();
 	private final UserListModel USERS = new UserListModel();
 
-	private final CompareGraphController GRAPH_CONTROLLER;
-
-	@Override
-	public void userModelChanged(){
-		GRAPH_CONTROLLER.updateUsers(USERS.getList());
-	}
+	private final CompareGraphController GRAPH_CONTROLLER = new CompareGraphController(null);
+	private final GetUserController GET_USER_CONTROLLER = new GetUserController();
+	private final SettingsController SETTINGS;
+	private final LogController LOG;
 
 	private void updateGraphGenreList(List<Object> selections){
 		GRAPH_CONTROLLER.updateGenres(selections);
@@ -32,8 +26,8 @@ public class MainScreenController implements UserModelListener{
 	}
 
 	public MainScreenController(){
-		USERS.addListener(this);
-		User.addListener(USERS);
+		USERS.addListener(GRAPH_CONTROLLER);
+		GET_USER_CONTROLLER.addListener(USERS);
 		Genre.addListener(GENRES);
 
 		Genre.getKnown().stream().forEach((g) -> GENRES.addElement(g.toString()));
@@ -52,7 +46,6 @@ public class MainScreenController implements UserModelListener{
 		VIEW.addGenreListSelectionListener(se -> updateGraphGenreList(VIEW.getGenresSelected()));
 		VIEW.addRemoveButtonListener(ae -> USERS.removeElementAt(VIEW.getUserListSelectionIndex()));
 
-		GRAPH_CONTROLLER = new CompareGraphController(null);
 		VIEW.setGraphPanel(GRAPH_CONTROLLER.getView());
 		VIEW.setSettingsPanel(SETTINGS.getView());
 		VIEW.setLogPanel(LOG.getView());
