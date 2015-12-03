@@ -79,4 +79,24 @@ public class UserListModel extends AbstractListModel implements UserDataSetListe
 	public void removeUser(User u){
 		removeElement(u);
 	}
+
+	public void moveDown(int index){
+		if(index < USER_LIST.size() - 1){
+			User above = USER_LIST.get(index);
+			User below = USER_LIST.get(index + 1);
+			USER_LIST.set(index, below);
+			USER_LIST.set(index + 1, above);
+			this.fireContentsChanged(this, index, index + 1);
+		}
+	}
+
+	public void moveUp(int index){
+		if(index > 0){
+			User above = USER_LIST.get(index - 1);
+			User below = USER_LIST.get(index);
+			USER_LIST.set(index - 1, below);
+			USER_LIST.set(index, above);
+			this.fireContentsChanged(this, index - 1, index);
+		}
+	}
 }

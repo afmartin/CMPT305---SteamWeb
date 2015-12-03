@@ -25,6 +25,11 @@ public class MainScreenController{
 		GET_USER_CONTROLLER.toggle();
 	}
 
+	private void setUserDirectionButtons(){
+		VIEW.setUpButtonActive((VIEW.getUserListSelectionIndex() > 0));
+		VIEW.setDownButtonActive((VIEW.getUserListSelectionIndex() < USERS.getSize() - 1));
+	}
+
 	public MainScreenController(){
 		USERS.addListener(GRAPH_CONTROLLER);
 		GET_USER_CONTROLLER.addListener(USERS);
@@ -46,6 +51,20 @@ public class MainScreenController{
 		VIEW.addGenreListSelectionListener(se -> updateGraphGenreList(VIEW.getGenresSelected()));
 		VIEW.addRemoveButtonListener(ae -> USERS.removeElementAt(VIEW.getUserListSelectionIndex()));
 
+		setUserDirectionButtons();
+
+		VIEW.addUpButtonListener(ae -> {
+			USERS.moveUp(VIEW.getUserListSelectionIndex());
+			VIEW.setUserListSelectionIndex(VIEW.getUserListSelectionIndex() - 1);
+			setUserDirectionButtons();
+		});
+		VIEW.addDownButtonListener(ae -> {
+			USERS.moveDown(VIEW.getUserListSelectionIndex());
+			VIEW.setUserListSelectionIndex(VIEW.getUserListSelectionIndex() + 1);
+			setUserDirectionButtons();
+		});
+
+		VIEW.addUserListSelectionListener(l -> setUserDirectionButtons());
 		VIEW.setGraphPanel(GRAPH_CONTROLLER.getView());
 		VIEW.setSettingsPanel(SETTINGS.getView());
 		VIEW.setLogPanel(LOG.getView());
