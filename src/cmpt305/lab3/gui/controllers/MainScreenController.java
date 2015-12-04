@@ -27,7 +27,7 @@ public class MainScreenController{
 
 	private void setUserDirectionButtons(){
 		VIEW.setUpButtonActive((VIEW.getUserListSelectionIndex() > 0));
-		VIEW.setDownButtonActive((VIEW.getUserListSelectionIndex() < USERS.getSize() - 1));
+		VIEW.setDownButtonActive((VIEW.getUserListSelectionIndex() >= 0 && VIEW.getUserListSelectionIndex() < USERS.getSize() - 1));
 	}
 
 	public MainScreenController(){
@@ -68,5 +68,7 @@ public class MainScreenController{
 		VIEW.setGraphPanel(GRAPH_CONTROLLER.getView());
 		VIEW.setSettingsPanel(SETTINGS.getView());
 		VIEW.setLogPanel(LOG.getView());
+
+		USERS.addListener(l -> setUserDirectionButtons());
 	}
 }
